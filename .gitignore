@@ -1,0 +1,7 @@
+.DS_Store
+dist-newstyle
+*~
+*.a
+cabal.project.local
+*.xcconfig
+xcuserdata
