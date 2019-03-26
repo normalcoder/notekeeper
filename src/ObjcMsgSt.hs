@@ -47,15 +47,15 @@ type SelName = String
 type StArgPtr = Ptr ()
 type StRetPtr = Ptr ()
 
-type CGFloat = Float
-type CGFloat2 = (Float, Float)
-type CGFloat4 = (Float, Float, Float, Float)
-data AffineTransform = AffineTransform { a, b, c, d, tx, ty :: Float } deriving (Show, Eq)
-data Transform3D = Transform3D { m11, m12, m13, m14, m21, m22, m23, m24, m31, m32, m33, m34, m41, m42, m43, m44 :: Float } deriving (Show, Eq)
+type CGFloat = Double
+type CGFloat2 = (CGFloat, CGFloat)
+type CGFloat4 = (CGFloat, CGFloat, CGFloat, CGFloat)
+data AffineTransform = AffineTransform { a, b, c, d, tx, ty :: CGFloat } deriving (Show, Eq)
+data Transform3D = Transform3D { m11, m12, m13, m14, m21, m22, m23, m24, m31, m32, m33, m34, m41, m42, m43, m44 :: CGFloat } deriving (Show, Eq)
 type Float2 = (Float, Float)
 type Double2 = (Double, Double)
 
-data FpValue = FpFloat Float | FpDouble Float deriving (Show) -- FpValue is a wrapper which helps to peek and poke float of double
+data FpValue = FpFloat CGFloat | FpDouble CGFloat deriving (Show) -- FpValue is a wrapper which helps to peek and poke float of double
 
 fpValueSize (FpFloat _) = 4
 fpValueSize (FpDouble _) = 8
@@ -65,15 +65,15 @@ instance Storable FpValue where
  sizeOf (FpFloat _) = sizeOfFloat
  sizeOf (FpDouble _) = sizeOfDouble
  peek _ = undefined
- poke ptr (FpFloat f) = poke (castPtr ptr) f
- poke ptr (FpDouble d) = poke (castPtr ptr) (float2Double d)
+ poke ptr (FpFloat f) = poke (castPtr ptr) (double2Float f)
+ poke ptr (FpDouble d) = poke (castPtr ptr) d
 
 sizeOfFloat = 4
 sizeOfDouble = 8
 
 peekFpValue size ptr
- | size == sizeOfFloat = peek (castPtr ptr) >>= \r -> return $ FpFloat r
- | size == sizeOfDouble = peek (castPtr ptr) >>= \r -> return $ FpDouble $ double2Float r
+ | size == sizeOfFloat = peek (castPtr ptr) >>= \r -> return $ FpFloat $ float2Double r
+ | size == sizeOfDouble = peek (castPtr ptr) >>= \r -> return $ FpDouble r
 
 -- in the user code we will use Doubles for CGFloat values, so we need such converters
 floatToFpValue cgFloat
