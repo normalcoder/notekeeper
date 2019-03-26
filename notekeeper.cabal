@@ -21,10 +21,10 @@ library
    , Window
 --   , Ui
    , Menu
-   , View.Color
-   , View.Image
-   , View.Label
-   , View.View
+--   , View.Color
+--   , View.Image
+--   , View.Label
+--   , View.View
   c-sources:
      src/funcSt.c
    , src/objc_msgSendN.c

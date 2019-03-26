@@ -4,7 +4,7 @@ module App
 
 import Objc
 import Foreign.Ptr
-import View.View
+--import View.View
 
 foreign import ccall safe "UIApplicationMain" c_UIApplicationMain :: Int -> Ptr () -> Id -> Id -> IO ()
 
@@ -50,7 +50,7 @@ numberOfRows _ _ _ = do
  pure $ toNsInteger 1
 
 cellForRow _ _ _ = do
- c <- "new1" @| "UITableViewCell"
+ c <- "new" @| "UITableViewCell"
  ("setText:", getNsString "123") <@ "textLabel" @<. c
  pure c
 
