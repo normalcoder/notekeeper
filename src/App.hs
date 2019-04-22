@@ -24,19 +24,44 @@ didFinishLaunching mixStorage _ _ _ = do
  ("setBackgroundColor:", "blackColor" @| "UIColor") <@. w
  ("setOpaque:", toNsBool True) <.@. w
  vc <- "new" @| "UIViewController"
+ createUi mixStorage vc
  ("setRootViewController:", vc) <.@. w
  ("setBackgroundColor:", "whiteColor" @| "UIColor") <@ "view" @<. vc
  "makeKeyAndVisible" @<. w
- createUi mixStorage vc
+ showImagePicker vc
  pure $ toNsBool True
 
 createUi mixStorage vc = do
+ createTableView mixStorage vc
+ --createImagePicker mixStorage vc
+
+createTableView mixStorage vc = do
  t <- "new" @| "UITableView"
  v <- "view" @<. vc
  ("setFrame:", "bounds" #<. v) <#. t
  ("addSubview:", t) <.@. v
  d <- mkDataSource
  ("setDataSource:", d) <.@. t
+
+--createImagePicker mixStorage vc = do
+-- mixAfter mixStorage vc "viewWillAppear:" $ NoRet $ \_ _ _ -> do
+--  showImagePicker vc
+--  print "open "
+-- --mixAfter mixStorage vc "viewDidAppear:" $ NoRet $ \_ _ _ -> do
+-- -- showImagePicker vc
+
+showImagePicker vc = do
+ p <- "new" @| "UIImagePickerController"
+ ("setSourceType:", toNsInteger 0) <.@. p
+ ("presentViewController:animated:completion:", [p, toNsBool True, nullPtr]) <.@@. vc
+ pure ()
+
+        --let p = UIImagePickerController()
+        --p.sourceType = .camera
+        --present(p, animated: true) {
+            
+        --}
+
 
 mkDataSource = do
  let c = "TagsTableViewDataSource"
@@ -51,7 +76,7 @@ numberOfRows _ _ _ = do
 
 cellForRow _ _ _ = do
  c <- "new" @| "UITableViewCell"
- ("setText:", getNsString "123") <@ "textLabel" @<. c
+ ("setText:", getNsString "1234") <@ "textLabel" @<. c
  pure c
 
 
