@@ -65,6 +65,8 @@ module ObjcMsgOps
 , (%<.@), op_stret_CGFloat2_apply_unIOed_arg_IOed_obj
 , (%<.@.), op_stret_CGFloat2_apply_unIOed_arg_unIOed_obj
 
+, (%<.%@.), op_stret_CGFloat2_apply_unIOed_arg_CGFloat2_unIOed_arg_ptr_unIOed_obj
+
 , (#<@), op_stret_CGFloat4_apply_IOed_arg_IOed_obj
 , (#<@.), op_stret_CGFloat4_apply_IOed_arg_unIOed_obj
 , (#<.@), op_stret_CGFloat4_apply_unIOed_arg_IOed_obj
@@ -254,6 +256,10 @@ infixr 5 %<.@
 op_stret_CGFloat2_apply_unIOed_arg_unIOed_obj (selName, arg) obj = objc_msgSend_stret_CGFloat2_apply_ptr obj selName arg
 (%<.@.) = op_stret_CGFloat2_apply_unIOed_arg_unIOed_obj
 infixr 5 %<.@.
+
+op_stret_CGFloat2_apply_unIOed_arg_CGFloat2_unIOed_arg_ptr_unIOed_obj (selName, arg1, arg2) obj = objc_msgSend_stret_CGFloat2_apply_CGFloat2_apply_ptr obj selName arg1 arg2
+(%<.%@.) = op_stret_CGFloat2_apply_unIOed_arg_CGFloat2_unIOed_arg_ptr_unIOed_obj
+infixr 5 %<.%@.
 
 op_stret_CGFloat4_apply_IOed_arg_IOed_obj (selName, argAct) objAct = argAct >>= \arg -> op_stret_CGFloat4_apply_unIOed_arg_IOed_obj (selName, arg) objAct
 (#<@) = op_stret_CGFloat4_apply_IOed_arg_IOed_obj

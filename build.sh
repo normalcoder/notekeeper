@@ -11,8 +11,11 @@ DEFAULT_ARCH=x86_64
 SELECTED_ARCH="${ARCHS:-${PASSED_ARCH:-$DEFAULT_ARCH}}"
 TARGET_ARCH="${SELECTED_ARCH/arm64/aarch64}"
 
-${TARGET_ARCH}-apple-ios-cabal new-configure --disable-shared --enable-static --allow-newer --ghc-option=-fllvmng --ghc-option=-threaded
-${TARGET_ARCH}-apple-ios-cabal new-build --allow-newer --ghc-option=-fllvmng --ghc-option=-threaded
+# ${TARGET_ARCH}-apple-ios-cabal new-list --installed
+# ${TARGET_ARCH}-apple-ios-cabal new-configure --disable-shared --enable-static --allow-newer --ghc-option=-fllvmng --ghc-option=-threaded
+# ${TARGET_ARCH}-apple-ios-cabal new-build --allow-newer --ghc-option=-fllvmng --ghc-option=-threaded
+${TARGET_ARCH}-apple-ios-cabal new-configure --disable-shared --enable-static --ghc-option=-fllvmng --ghc-option=-threaded
+${TARGET_ARCH}-apple-ios-cabal new-build --ghc-option=-fllvmng --ghc-option=-threaded
 
 LIB_NAME=app
 

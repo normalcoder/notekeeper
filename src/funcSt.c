@@ -74,7 +74,8 @@ void * objc_msgSend_stapply_Double2(void * obj, void * sel, struct Double2 * a1)
 // void * objc_msgSend_stapply_Bool(void * obj, void * sel, struct Bool * a1) { return ((void * (*)(void *, void *, struct Bool))f)(obj, sel, *a1); }
 
 // void objc_msgSend_stret_CGFloat(void * obj, void * sel, struct CGFloat * r, void * a1) { *r = ((struct CGFloat (*)(void *, void *, void *))fRet)(obj, sel, a1); }
-void objc_msgSend_stret_CGFloat2(void * obj, void * sel, struct CGFloat2 * r, void * a1) { *r = ((struct CGFloat2 (*)(void *, void *, void *))fRet)(obj, sel, a1); }
+void objc_msgSend_stret_CGFloat2(void * obj, void * sel, struct CGFloat2 * r) { *r = ((struct CGFloat2 (*)(void *, void *))f)(obj, sel); }
+void objc_msgSend_stret_CGFloat2_apply_ptr(void * obj, void * sel, struct CGFloat2 * r, void * a1) { *r = ((struct CGFloat2 (*)(void *, void *, void *))f)(obj, sel, a1); }
 void objc_msgSend_stret_CGFloat4(void * obj, void * sel, struct CGFloat4 * r, void * a1) { *r = ((struct CGFloat4 (*)(void *, void *, void *))fRet)(obj, sel, a1); }
 void objc_msgSend_stret_CGFloat6(void * obj, void * sel, struct CGFloat6 * r, void * a1) { *r = ((struct CGFloat6 (*)(void *, void *, void *))fRet)(obj, sel, a1); }
 void objc_msgSend_stret_CGFloat16(void * obj, void * sel, struct CGFloat16 * r, void * a1) { *r = ((struct CGFloat16 (*)(void *, void *, void *))fRet)(obj, sel, a1); }
@@ -84,3 +85,6 @@ void objc_msgSend_stret_Float2(void * obj, void * sel, struct Float2 * r, void *
 void objc_msgSend_stret_Double2(void * obj, void * sel, struct Double2 * r, void * a1) { *r = ((struct Double2 (*)(void *, void *, void *))fRet)(obj, sel, a1); }
 // void objc_msgSend_stret_Long(void * obj, void * sel, struct Long * r, void * a1) { *r = ((struct Long (*)(void *, void *, void *))fRet)(obj, sel, a1); }
 // void objc_msgSend_stret_Bool(void * obj, void * sel, struct Bool * r, void * a1) { *r = ((struct Bool (*)(void *, void *, void *))fRet)(obj, sel, a1); }
+
+void objc_msgSend_stret_CGFloat2_apply_CGFloat2_apply_ptr(void * obj, void * sel, struct CGFloat2 * r, struct CGFloat2 * a1, void * a2) { *r = ((struct CGFloat2 (*)(void *, void *, struct CGFloat2, void *))f)(obj, sel, *a1, a2); }
+

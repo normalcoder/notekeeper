@@ -1,3 +1,5 @@
+{-# language FlexibleInstances #-}
+
 module ObjcMsgSt
 ( AffineTransform(..)
 , Transform3D(..)
@@ -31,6 +33,7 @@ module ObjcMsgSt
 , objc_msgSend_stret_Double2_apply_ptr
 --, objc_msgSend_stret_Float
 --, objc_msgSend_stret_Float_apply_ptr
+, objc_msgSend_stret_CGFloat2_apply_CGFloat2_apply_ptr
 ) where
 
 import ObjcTypes
@@ -55,16 +58,23 @@ data Transform3D = Transform3D { m11, m12, m13, m14, m21, m22, m23, m24, m31, m3
 type Float2 = (Float, Float)
 type Double2 = (Double, Double)
 
+instance Storable a => Storable (a, a) where
+ alignment _ = 8
+ sizeOf _ = 2 * 8 -- (sizeOf (undefined :: a))
+ peek p = (,) <$> peekElemOff (castPtr p) 0 <*> peekElemOff (castPtr p) 1
+ poke p (a,b) = pokeElemOff (castPtr p) 0 a >> pokeElemOff (castPtr p) 1 b
+
+
 data FpValue = FpFloat CGFloat | FpDouble CGFloat deriving (Show) -- FpValue is a wrapper which helps to peek and poke float of double
 
 fpValueSize (FpFloat _) = 4
 fpValueSize (FpDouble _) = 8
 
 instance Storable FpValue where
- alignment _ = 4
+ alignment _ = 8
  sizeOf (FpFloat _) = sizeOfFloat
  sizeOf (FpDouble _) = sizeOfDouble
- peek _ = undefined
+ peek _ = error "34536633"
  poke ptr (FpFloat f) = poke (castPtr ptr) (double2Float f)
  poke ptr (FpDouble d) = poke (castPtr ptr) d
 
@@ -98,13 +108,13 @@ objc_msgSend_stapply_CGFloat4 obj selName (x,y,w,h) =
 objc_msgSend_stapply_CGFloat6 obj selName (AffineTransform a b c d tx ty) =
  common_stapply obj selName c_objc_msgSend_stapply_CGFloat6 $ map floatToFpValue [a,b,c,d,tx,ty]
 objc_msgSend_stapply_CGFloat16 obj selName (Transform3D m11 m12 m13 m14 m21 m22 m23 m24 m31 m32 m33 m34 m41 m42 m43 m44) =
- common_stapply obj selName c_objc_msgSend_stapply_CGFloat6 $ map floatToFpValue [m11,m12,m13,m14,m21,m22,m23,m24,m31,m32,m33,m34,m41,m42,m43,m44]
+ common_stapply obj selName c_objc_msgSend_stapply_CGFloat16 $ map floatToFpValue [m11,m12,m13,m14,m21,m22,m23,m24,m31,m32,m33,m34,m41,m42,m43,m44]
 objc_msgSend_stapply_Float2 obj selName (x,y) =
  common_stapply obj selName c_objc_msgSend_stapply_Float2 $ map FpFloat [x,y]
 objc_msgSend_stapply_Double2 obj selName (x,y) =
  common_stapply obj selName c_objc_msgSend_stapply_Double2 $ map FpDouble [x,y]
 
-objc_msgSend_stapply_Double :: Id -> SelName -> Float -> IO Id
+objc_msgSend_stapply_Double :: Id -> SelName -> Double -> IO Id
 objc_msgSend_stapply_Double obj selName x = do
  sel <- getSelByName selName
  allocaBytes sizeOfFloat $ \structBuffer -> do
@@ -131,10 +141,23 @@ common_stapply obj selName f fpValues@(firstFpValue:_) = do
    sizeOfFpValue = fpValueSize firstFpValue
 
 objc_msgSend_stret_CGFloat2 :: Id -> SelName -> IO CGFloat2
-objc_msgSend_stret_CGFloat2 obj selName = objc_msgSend_stret_CGFloat2_apply_ptr obj selName nullPtr
+objc_msgSend_stret_CGFloat2 obj selName = do
+ sel <- getSelByName selName
+ alloca $ \rPtr -> do
+  c_objc_msgSend_stret_CGFloat2 obj sel rPtr
+  peek rPtr
+
+objc_msgSend_stret_CGFloat2_apply_ptr :: Id -> SelName -> Id -> IO CGFloat2
 objc_msgSend_stret_CGFloat2_apply_ptr obj selName arg1 = do
- [x,y] <- common_stret_cgfloats obj selName c_objc_msgSend_stret_CGFloat2 2 arg1
- return (x,y)
+ sel <- getSelByName selName
+ alloca $ \rPtr -> do
+  c_objc_msgSend_stret_CGFloat2_apply_ptr obj sel rPtr arg1
+  peek rPtr
+
+-- objc_msgSend_stret_CGFloat2 obj selName = objc_msgSend_stret_CGFloat2_apply_ptr obj selName nullPtr
+-- objc_msgSend_stret_CGFloat2_apply_ptr obj selName arg1 = do
+--  [x,y] <- common_stret_cgfloats obj selName c_objc_msgSend_stret_CGFloat2 2 arg1
+--  return (x,y)
 
 objc_msgSend_stret_CGFloat4 obj selName = objc_msgSend_stret_CGFloat4_apply_ptr obj selName nullPtr
 objc_msgSend_stret_CGFloat4_apply_ptr obj selName arg1 = do
@@ -198,10 +221,24 @@ foreign import ccall safe "objc_msgSend_stapply_Double2" c_objc_msgSend_stapply_
 foreign import ccall safe "objc_msgSend_stapply_Double" c_objc_msgSend_stapply_Double :: Id -> Sel -> StArgPtr -> IO Id
 foreign import ccall safe "objc_msgSend_stapply_Float" c_objc_msgSend_stapply_Float :: Id -> Sel -> StArgPtr -> IO Id
 
-foreign import ccall safe "objc_msgSend_stret_CGFloat2" c_objc_msgSend_stret_CGFloat2 :: Id -> Sel -> StRetPtr -> Id -> IO ()
+foreign import ccall safe "objc_msgSend_stret_CGFloat2" c_objc_msgSend_stret_CGFloat2 :: Id -> Sel -> Ptr CGFloat2 -> IO ()
+foreign import ccall safe "objc_msgSend_stret_CGFloat2_apply_ptr" c_objc_msgSend_stret_CGFloat2_apply_ptr :: Id -> Sel -> Ptr CGFloat2 -> Id -> IO ()
 foreign import ccall safe "objc_msgSend_stret_CGFloat4" c_objc_msgSend_stret_CGFloat4 :: Id -> Sel -> StRetPtr -> Id -> IO ()
 foreign import ccall safe "objc_msgSend_stret_CGFloat6" c_objc_msgSend_stret_CGFloat6 :: Id -> Sel -> StRetPtr -> Id -> IO ()
 foreign import ccall safe "objc_msgSend_stret_CGFloat16" c_objc_msgSend_stret_CGFloat16 :: Id -> Sel -> StRetPtr -> Id -> IO ()
 foreign import ccall safe "objc_msgSend_stret_Float2" c_objc_msgSend_stret_Float2 :: Id -> Sel -> StRetPtr -> Id -> IO ()
 foreign import ccall safe "objc_msgSend_stret_Double2" c_objc_msgSend_stret_Double2 :: Id -> Sel -> StRetPtr -> Id -> IO ()
 --foreign import ccall safe "objc_msgSend_stret_Float" c_objc_msgSend_stret_Float :: Id -> Sel -> StRetPtr -> Id -> IO ()
+
+foreign import ccall safe "objc_msgSend_stret_CGFloat2_apply_CGFloat2_apply_ptr" c_objc_msgSend_stret_CGFloat2_apply_CGFloat2_apply_ptr :: Id -> Sel -> Ptr CGFloat2 -> Ptr CGFloat2 -> Id -> IO ()
+
+objc_msgSend_stret_CGFloat2_apply_CGFloat2_apply_ptr :: Id -> SelName -> CGFloat2 -> Id -> IO CGFloat2
+objc_msgSend_stret_CGFloat2_apply_CGFloat2_apply_ptr obj selName arg1 arg2 = do
+ sel <- getSelByName selName
+ alloca $ \arg1Buffer -> do
+  alloca $ \rBuffer -> do
+   poke arg1Buffer arg1
+   c_objc_msgSend_stret_CGFloat2_apply_CGFloat2_apply_ptr obj sel rBuffer arg1Buffer arg2
+   peek rBuffer
+
+
