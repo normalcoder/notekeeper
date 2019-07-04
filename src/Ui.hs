@@ -28,6 +28,8 @@ createUi mixStorage vc = do
 
  v <- "view" @<. vc
  createList mixStorage v [["blackColor"], ["cyanColor"], ["redColor", "greenColor"], manyColors]
+ 
+ pure ()
 
  -- q <- "new" @| "UIView"
  -- setBackgroundColor' "redColor" q

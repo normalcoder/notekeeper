@@ -44,8 +44,9 @@ data Kind =
  | Image Aspect (IO UIImage)
  | Button (IO ())
 
-build :: ViewSpec -> View
-build (ViewSpec (V _ k color constr subviews _)) = undefined
+build :: ViewSpec -> IO View
+build (ViewSpec (V _ k color constr subviews isScreen)) = do
+ pure undefined
 
 
 -- layout :: View -> IO ()
