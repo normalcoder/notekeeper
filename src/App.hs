@@ -7,6 +7,7 @@ import Foreign.Ptr
 --import View.View
 import Ui
 
+
 foreign import ccall safe "UIApplicationMain" c_UIApplicationMain :: Int -> Ptr () -> Id -> Id -> IO ()
 
 appDelegateClassName = "AppDelegate"

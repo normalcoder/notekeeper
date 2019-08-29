@@ -25,6 +25,7 @@ createUi mixStorage vc = do
  registerSubclass "NSObject" "AnimDel" $
   [ (InstanceMethod, "animationDidStop:finished:", \_ _ _ -> pure nullPtr)
   ]
+ -- v1 <- check
 
  v <- "view" @<. vc
  createList mixStorage v [["blackColor"], ["cyanColor"], ["redColor", "greenColor"], manyColors]

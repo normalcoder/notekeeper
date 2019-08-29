@@ -1,10 +1,15 @@
+{-# language ScopedTypeVariables #-}
+
 module View.View
 ( ViewSpec
 , View
 , Subviews(..)
 , IsVertical(..)
 -- , IsVertical(..)
+, check
 ) where
+
+import Control.Monad
 
 import Objc
 import View.Label
@@ -17,11 +22,14 @@ import View.Color
 
 newtype ViewSpec = ViewSpec (V ())
 newtype View = View (V UIView)
+unview (View v) = v
 
 newtype UIView = UIView Id
 
-data V a = V a Kind Color Constraints (Subviews a) IsScreen
+data V a = V a Kind Color Constraints (Subviews a) IsScreen [PathComp]
 data Subviews a = Subviews Insets IsVertical [V a]
+
+newtype PathComp = PathComp String
 
 data IsVertical = Vertical | Horizontal
 data IsScreen = Screen | NotScreen
@@ -44,10 +52,18 @@ data Kind =
  | Image Aspect (IO UIImage)
  | Button (IO ())
 
-build :: ViewSpec -> IO View
-build (ViewSpec (V _ k color constr subviews isScreen)) = do
- pure undefined
+check = undefined
+-- check = do
+--  build $ ViewSpec $ V () Container (Constraints (Maybe MinWidth) (Maybe MaxWidth) (Maybe MinHeight) (Maybe MaxHeight))
 
+build :: ViewSpec -> IO View
+build (ViewSpec (V _ k color constr (Subviews insets isVertical subviews) isScreen pathComps)) = do
+ v <- "new" @| "UIView"
+ subviews <- traverse (pure . unview <=< build . ViewSpec) subviews
+ pure $ View $ V (UIView v) k color constr (Subviews insets isVertical subviews) isScreen pathComps
+
+ -- subviews' <- pure . Subviews insets isVertical $ mapM (pure . unview =<< build . map ViewSpec) subviews
+ -- pure $ View $ V (UIView v) k color constr subviews' isScreen pathComps
 
 -- layout :: View -> IO ()
 -- layout (View (V v k color constr subveiws)) = case k of
