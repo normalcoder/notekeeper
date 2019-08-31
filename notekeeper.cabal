@@ -14,10 +14,12 @@ library
    , ObjcMsgHelpers
    , ObjcMsg
    , ObjcMixStorage
+   , ObjcGlobalMixStorage
    , ObjcHelpers
    , ObjcFunPtr
    , ObjcClassManipulations
    , Objc
+   , UiKit
    , Gcd
    , Window
    , Ui

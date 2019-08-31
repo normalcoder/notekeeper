@@ -3,6 +3,7 @@ module Ui
 ) where
 
 import Objc
+import UiKit
 import Foreign.Ptr
 import View.View
 
@@ -19,26 +20,46 @@ import Foreign.Storable
 
 foreign import ccall unsafe "&kCAFillModeForwards" kCAFillModeForwards :: Ptr Id
 
+foreign import ccall safe "startCapturing" c_startCapturing :: IO ()
+
+
+startCapturing = do
+ c_startCapturing
+
 manyColors = take 20 $ cycle ["blueColor", "redColor", "greenColor", "grayColor", "lightGrayColor", "darkGrayColor", "brownColor"]
 
-createUi mixStorage vc = do
- registerSubclass "NSObject" "AnimDel" $
-  [ (InstanceMethod, "animationDidStop:finished:", \_ _ _ -> pure nullPtr)
-  ]
- -- v1 <- check
 
- v <- "view" @<. vc
- createList mixStorage v [["blackColor"], ["cyanColor"], ["redColor", "greenColor"], manyColors]
+createUi :: Id -> IO ()
+createUi vc = do
+ v <- mkUiView  -- "new" @| "UIView"
+
+ -- v <- build $ overlap $ do
+ --  capture >>= tags
+ rootView <- "view" @<. vc
+
+ (Superview rootView) `addSubviewAndPin` (Subview v)
+
+
+ -- registerSubclass "NSObject" "AnimDel" $
+ --  [ (InstanceMethod, "animationDidStop:finished:", \_ _ _ -> pure nullPtr)
+ --  ]
+ -- -- v1 <- check
+
+ -- startCapturing
+
+ -- v <- "view" @<. vc
+
+ -- createList v [["blackColor"], ["cyanColor"], ["redColor", "greenColor"], manyColors]
  
  pure ()
 
  -- q <- "new" @| "UIView"
  -- setBackgroundColor' "redColor" q
- -- addSubview mixStorage q (\_ -> (100, 100, 100, 100)) v
- -- animateT mixStorage (translate (-90,-90)) q
+ -- addSubview' (Superview v) (Subview q) (\_ -> (100, 100, 100, 100))
+ -- animateT (translate (-90,-90)) q
  -- forkIO $ do
  --  threadDelay $ 5*10^6
- --  onMainThread $ animateT mixStorage (rotate $ pi/4) q
+ --  onMainThread $ animateT (rotate $ pi/4) q
 
 
 
@@ -52,51 +73,39 @@ imageLeftSpace = 10
 
 labelLeftSpace = 10
 
--- createImagePicker mixStorage vc = do
---  mixAfter mixStorage vc "viewWillAppear:" $ NoRet $ \_ _ _ -> do
+-- createImagePicker vc = do
+--  mixAfter vc "viewWillAppear:" $ NoRet $ \_ _ _ -> do
 --   showImagePicker vc
 --   print "open "
---  --mixAfter mixStorage vc "viewDidAppear:" $ NoRet $ \_ _ _ -> do
+--  --mixAfter vc "viewDidAppear:" $ NoRet $ \_ _ _ -> do
 --  -- showImagePicker vc
-
-type Rect = (CGFloat, CGFloat, CGFloat, CGFloat)
-
-addSubview :: MixStorage -> Id -> (Rect -> Rect) -> Id -> IO ()
-addSubview mixStorage view calcFrame superview = do
- -- ("setFrame:", calcFrame <$> ("frame" #<. superview)) <#. view
- (x,y,w,h) <- calcFrame <$> ("bounds" #<. superview)
- ("setBounds:", (0, 0, w, h)) <.#. view
- ("setCenter:", (x + w/2, y + h/2)) <.%. view
- -- mixAfter mixStorage superview "layoutSubviews" $ NoRet $ \_ _ _ -> do
- --  ("setFrame:", calcFrame <$> ("frame" #<. superview)) <#. view
- --  pure ()
- ("addSubview:", view) <.@. superview
- pure ()
 
 setBackgroundColor' c v = do
  ("setBackgroundColor:", c @| "UIColor") <@. v
  pure ()
 
-createList mixStorage v rows = do
+createList v rows = do
  list <- "new" @| "UIView"
- addSubview mixStorage list (\(_,_,w,_) -> (w - listWidth, 100, listWidth, rowHeight*(fromIntegral $ length rows))) v
+ addSubview' (Superview v) (Subview list) (\(_,_,w,_) -> (w - listWidth, 100, listWidth, rowHeight*(fromIntegral $ length rows)))
  expansion <- newEmptyMVar
- mapM_ (uncurry $ createRow mixStorage expansion v list) $ zip [0..] rows
+ mapM_ (uncurry $ createRow expansion v list) $ zip [0..] rows
 
-createRow mixStorage expansion mainView list i rowData = do
+createRow expansion mainView list i rowData = do
  row <- "new" @| "UIView"
- addSubview mixStorage row (\_ -> (0, rowHeight*(fromIntegral i), listWidth, rowHeight)) list
+ addSubview' (Superview list) (Subview row) (\_ -> (0, rowHeight*(fromIntegral i), listWidth, rowHeight))
 
  label <- "new" @| "UILabel"
  ("setTextAlignment:", ptrInt 2) <.@. label
  ("setText:", getNsString $ head rowData) <@. label
- addSubview mixStorage label (\_ -> (labelLeftSpace, 0, listWidth - labelLeftSpace - imageLeftSpace - imageWidth - imageRightSpace, rowHeight)) row
+ addSubview' (Superview row) (Subview label) (\_ -> (labelLeftSpace, 0, listWidth - labelLeftSpace - imageLeftSpace - imageWidth - imageRightSpace, rowHeight))
 
- images <- mapM (createImage mixStorage row) $ zip (map Left [0..]) $ lastN 8 rowData
+ -- mapM (createImage row) $ zip (map Left [0..]) $ lastN 8 rowData
+ images <- mapM (createImage row) $ zip (map Left [0..]) $ lastN 8 rowData
+
 
  started <- newMVar False
 
- onTap mixStorage started row $ do
+ onTap started row $ do
   e <- tryTakeMVar expansion
   case e of
    Just (t, fold, j) -> do
@@ -109,9 +118,9 @@ createRow mixStorage expansion mainView list i rowData = do
       animate img i j = do
        print (i,j)
        t <- imgTransform mainView row img (i,j)
-       animateT mixStorage t img
+       animateT t img
 
-     otherImages <- mapM (createImage mixStorage row) $ zip (cycle $ map Right [0..3]) $ takeButN 8 rowData
+     otherImages <- mapM (createImage row) $ zip (cycle $ map Right [0..3]) $ takeButN 8 rowData
 
      let imgGroups = zipWithRevInds $ chunks 4 $ otherImages ++ images
 
@@ -120,15 +129,15 @@ createRow mixStorage expansion mainView list i rowData = do
     else do
      killThread t
      fold
-     fold <- expand mixStorage label images
+     fold <- expand label images
      t <- forkIO $ threadDelay (200*10^6) >> (onMainThread $ fold >> tryTakeMVar expansion >> pure ())
      putMVar expansion $ (t, fold, i)
    _ -> do
-    fold <- expand mixStorage label images
+    fold <- expand label images
     t <- forkIO $ threadDelay (200*10^6) >> (onMainThread $ fold >> tryTakeMVar expansion >> pure ())
     putMVar expansion $ (t, fold, i)
 
-  -- fold <- expand mixStorage label images
+  -- fold <- expand label images
   -- t <- forkIO $ threadDelay (200*10^6) >> (onMainThread $ fold >> tryTakeMVar expansion >> pure ())
   -- tappedAgain <- fmap join $ traverse (\(t, fold, j) -> killThread t >>
   --  if i /= j then fold >> pure Nothing else pure (Just j)) =<< tryTakeMVar expansion
@@ -140,7 +149,7 @@ createRow mixStorage expansion mainView list i rowData = do
   --   let
   --    animate img i j = do
   --     print (i,j)
-  --     -- animateT mixStorage idT img
+  --     -- animateT idT img
 
   --   let imgGroups = zip [0..] $ chunks 4 images
   --   mapM_ (\(i,g) -> mapM_ (\(j,img) -> animate img i j) $ zip [0..] g) imgGroups
@@ -168,11 +177,11 @@ imgTransform mainView row img (i,j) = do
  (x0,y0) <- convert row mainView =<< ("center" %<. img)
  pure $ scale (a/a0) `mul` translate (x - x0, y - y0)
 
-onTap mixStorage started v act = do
- -- mixAfter mixStorage v "touchesBegan:withEvent:" $ NoRet $ \_ _ (touches:_) -> do
+onTap started v act = do
+ -- mixAfter v "touchesBegan:withEvent:" $ NoRet $ \_ _ (touches:_) -> do
  --  putMVar started True
 
- mixAfter mixStorage v "touchesEnded:withEvent:" $ NoRet $ \_ _ (touches:_) -> do
+ mixAfter v "touchesEnded:withEvent:" $ NoRet $ \_ _ (touches:_) -> do
   t <- "anyObject" @<. touches
   -- inside <- isInside t v
   -- isStarted <- takeMVar started
@@ -189,7 +198,7 @@ isInside t v = do
  -- print 3
  pure $ x <= w && y <= h
 
-animateT mixStorage t v = do
+animateT t v = do
  print $ "animateT: " ++ show v
  l <- "layer" @<. v
  a <- "animation" @| "CABasicAnimation"
@@ -204,8 +213,8 @@ animateT mixStorage t v = do
 
  k <- getNsString "animateT"
  o <- "new" @| "AnimDel"
- mixAfter mixStorage o "animationDidStop:finished:" $ NoRet $ \_ _ _ -> do
-  unmixLast mixStorage o "animationDidStop:finished:"
+ mixAfter o "animationDidStop:finished:" $ NoRet $ \_ _ _ -> do
+  unmixLast o "animationDidStop:finished:"
   setTransform t v
   print $ "animationDidStop:finished: " ++ show v
   ("removeAnimationForKey:", k) <.@. l
@@ -216,14 +225,14 @@ animateT mixStorage t v = do
  ("addAnimation:forKey:", [a, k]) <.@@. l
  pure ()
 
-expand mixStorage label images = do
+expand label images = do
  animate offsetT (offsetT $ length images - 1)
  -- animate (const idT) (offsetT $ length images - 1)
  pure $ animate transformForI idT
  where
   animate imgT labelT = do
-   mapM_ (\(i, image) -> animateT mixStorage (imgT i) image) $ zip [0..] images
-   animateT mixStorage labelT label
+   mapM_ (\(i, image) -> animateT (imgT i) image) $ zip [0..] images
+   animateT labelT label
 
 
 -- offset i = setTransform . offsetT
@@ -237,11 +246,11 @@ tForI i = case i of
  Left i -> transformForI i
  Right i -> offsetT i
 
-createImage mixStorage row (i, imageData) = do
+createImage row (i, imageData) = do
  image <- "new" @| "UIImageView"
  setTransform (tForI i) image
  ("setBackgroundColor:", imageData @| "UIColor") <@. image
- addSubview mixStorage image (\_ -> (listWidth - imageRightSpace - imageWidth, (rowHeight - imageHeight)/2, imageWidth, imageHeight)) row
+ addSubview' (Superview row) (Subview image) (\_ -> (listWidth - imageRightSpace - imageWidth, (rowHeight - imageHeight)/2, imageWidth, imageHeight))
  pure image
 
 setTransform t v = do

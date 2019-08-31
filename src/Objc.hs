@@ -3,6 +3,7 @@ module Objc
 , module ObjcFunPtr
 , module ObjcHelpers
 , module ObjcMixStorage
+, module ObjcGlobalMixStorage
 , module ObjcMsg
 , module ObjcMsgHelpers
 , module ObjcMsgOps
@@ -13,7 +14,8 @@ module Objc
 import ObjcClassManipulations
 import ObjcFunPtr
 import ObjcHelpers
-import ObjcMixStorage
+import ObjcMixStorage (CommonCallFunc(..))
+import ObjcGlobalMixStorage
 import ObjcMsg
 import ObjcMsgHelpers
 import ObjcMsgOps

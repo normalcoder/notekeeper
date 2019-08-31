@@ -12,16 +12,16 @@ foreign import ccall safe "UIApplicationMain" c_UIApplicationMain :: Int -> Ptr 
 
 appDelegateClassName = "AppDelegate"
 
-run mixStorage = do
- createAppDelegate mixStorage appDelegateClassName
+run = do
+ createAppDelegate appDelegateClassName
  c_UIApplicationMain 0 nullPtr nullPtr =<< getNsString appDelegateClassName
 
-createAppDelegate mixStorage className = do
+createAppDelegate className = do
  registerSubclass "UIResponder" className $
-  [ (InstanceMethod, "application:didFinishLaunchingWithOptions:", didFinishLaunching mixStorage)
+  [ (InstanceMethod, "application:didFinishLaunchingWithOptions:", didFinishLaunching)
   ]
 
-didFinishLaunching mixStorage _ _ _ = do
+didFinishLaunching _ _ _ = do
  w <- ("initWithFrame:", "bounds" #< "mainScreen" @| "UIScreen") <# "alloc" @| "UIWindow"
  ("setBackgroundColor:", "blackColor" @| "UIColor") <@. w
  ("setOpaque:", toNsBool True) <.@. w
@@ -29,5 +29,5 @@ didFinishLaunching mixStorage _ _ _ = do
  ("setRootViewController:", vc) <.@. w
  ("setBackgroundColor:", "whiteColor" @| "UIColor") <@ "view" @<. vc
  "makeKeyAndVisible" @<. w
- createUi mixStorage vc
+ createUi vc
  pure $ toNsBool True

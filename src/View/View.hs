@@ -16,6 +16,8 @@ import View.Label
 import View.Image
 import View.Color
 
+import Prelude hiding (Left, Right)
+
 -- ViewSpecWithModel
 -- Screen
 
@@ -52,9 +54,18 @@ data Kind =
  | Image Aspect (IO UIImage)
  | Button (IO ())
 
-check = undefined
--- check = do
---  build $ ViewSpec $ V () Container (Constraints (Maybe MinWidth) (Maybe MaxWidth) (Maybe MinHeight) (Maybe MaxHeight))
+-- check = undefined
+check = do
+ build $ ViewSpec $ V ()
+  Container
+  white
+  (Constraints Nothing Nothing Nothing Nothing)
+  (Subviews
+   (Insets (Left 0) (Right 0) (Top 0) (Bottom 0))
+   Vertical
+   [])
+  Screen
+  []
 
 build :: ViewSpec -> IO View
 build (ViewSpec (V _ k color constr (Subviews insets isVertical subviews) isScreen pathComps)) = do
