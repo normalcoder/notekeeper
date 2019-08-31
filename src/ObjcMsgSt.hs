@@ -19,6 +19,8 @@ module ObjcMsgSt
 , objc_msgSend_stapply_Double
 , objc_msgSend_stapply_Float
 
+, objc_msgSend_apply_CGFloat_x4
+
 , objc_msgSend_stret_CGFloat2
 , objc_msgSend_stret_CGFloat2_apply_ptr
 , objc_msgSend_stret_CGFloat4
@@ -113,6 +115,12 @@ objc_msgSend_stapply_Float2 obj selName (x,y) =
  common_stapply obj selName c_objc_msgSend_stapply_Float2 $ map FpFloat [x,y]
 objc_msgSend_stapply_Double2 obj selName (x,y) =
  common_stapply obj selName c_objc_msgSend_stapply_Double2 $ map FpDouble [x,y]
+
+objc_msgSend_apply_CGFloat_x4 :: Id -> SelName -> CGFloat -> CGFloat -> CGFloat -> CGFloat -> IO Id
+objc_msgSend_apply_CGFloat_x4 obj selName x y z w = do
+ sel <- getSelByName selName
+ c_objc_msgSend_apply_CGFloat_x4 obj sel x y z w
+
 
 objc_msgSend_stapply_Double :: Id -> SelName -> Double -> IO Id
 objc_msgSend_stapply_Double obj selName x = do
@@ -220,6 +228,9 @@ foreign import ccall safe "objc_msgSend_stapply_Float2" c_objc_msgSend_stapply_F
 foreign import ccall safe "objc_msgSend_stapply_Double2" c_objc_msgSend_stapply_Double2 :: Id -> Sel -> StArgPtr -> IO Id
 foreign import ccall safe "objc_msgSend_stapply_Double" c_objc_msgSend_stapply_Double :: Id -> Sel -> StArgPtr -> IO Id
 foreign import ccall safe "objc_msgSend_stapply_Float" c_objc_msgSend_stapply_Float :: Id -> Sel -> StArgPtr -> IO Id
+
+foreign import ccall safe "objc_msgSend_apply_CGFloat_x4" c_objc_msgSend_apply_CGFloat_x4 :: Id -> Sel -> CGFloat -> CGFloat -> CGFloat -> CGFloat -> IO Id
+
 
 foreign import ccall safe "objc_msgSend_stret_CGFloat2" c_objc_msgSend_stret_CGFloat2 :: Id -> Sel -> Ptr CGFloat2 -> IO ()
 foreign import ccall safe "objc_msgSend_stret_CGFloat2_apply_ptr" c_objc_msgSend_stret_CGFloat2_apply_ptr :: Id -> Sel -> Ptr CGFloat2 -> Id -> IO ()

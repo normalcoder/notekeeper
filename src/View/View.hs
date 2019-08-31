@@ -6,7 +6,9 @@ module View.View
 , Subviews(..)
 , IsVertical(..)
 -- , IsVertical(..)
-, check
+, build
+, rootUiView
+, v1Spec
 ) where
 
 import Control.Monad
@@ -55,10 +57,10 @@ data Kind =
  | Button (IO ())
 
 -- check = undefined
-check = do
- build $ ViewSpec $ V ()
+v1Spec = do
+ ViewSpec $ V ()
   Container
-  white
+  red
   (Constraints Nothing Nothing Nothing Nothing)
   (Subviews
    (Insets (Left 0) (Right 0) (Top 0) (Bottom 0))
@@ -70,9 +72,11 @@ check = do
 build :: ViewSpec -> IO View
 build (ViewSpec (V _ k color constr (Subviews insets isVertical subviews) isScreen pathComps)) = do
  v <- "new" @| "UIView"
+ ("setBackgroundColor:", uiColor color) <@. v
  subviews <- traverse (pure . unview <=< build . ViewSpec) subviews
  pure $ View $ V (UIView v) k color constr (Subviews insets isVertical subviews) isScreen pathComps
 
+rootUiView (View (V (UIView v) _ _ _ _ _ _)) = v
  -- subviews' <- pure . Subviews insets isVertical $ mapM (pure . unview =<< build . map ViewSpec) subviews
  -- pure $ View $ V (UIView v) k color constr subviews' isScreen pathComps
 

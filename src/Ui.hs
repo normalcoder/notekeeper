@@ -31,13 +31,15 @@ manyColors = take 20 $ cycle ["blueColor", "redColor", "greenColor", "grayColor"
 
 createUi :: Id -> IO ()
 createUi vc = do
- v <- mkUiView  -- "new" @| "UIView"
-
- -- v <- build $ overlap $ do
- --  capture >>= tags
  rootView <- "view" @<. vc
 
- (Superview rootView) `addSubviewAndPin` (Subview v)
+ q <- build v1Spec
+ -- v <- build $ overlap $ do
+ --  capture >>= tags
+
+ v <- mkUiView  -- "new" @| "UIView"
+
+ (Superview rootView) `addSubviewAndPin` (Subview $ rootUiView q)
 
 
  -- registerSubclass "NSObject" "AnimDel" $
