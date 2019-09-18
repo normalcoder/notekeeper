@@ -5,7 +5,7 @@ module Ui
 import Objc
 import UiKit
 import Foreign.Ptr
-import View.View
+-- import View.View
 
 import Gcd
 
@@ -31,15 +31,15 @@ manyColors = take 20 $ cycle ["blueColor", "redColor", "greenColor", "grayColor"
 
 createUi :: Id -> IO ()
 createUi vc = do
- rootView <- "view" @<. vc
+ -- rootView <- "view" @<. vc
 
- q <- build v1Spec
+ -- q <- build v1Spec
  -- v <- build $ overlap $ do
  --  capture >>= tags
 
- v <- mkUiView  -- "new" @| "UIView"
+ -- v <- mkUiView  -- "new" @| "UIView"
 
- (Superview rootView) `addSubviewAndPin` (Subview $ rootUiView q)
+ -- (Superview rootView) `addSubviewAndPin` (Subview $ rootUiView q)
 
 
  -- registerSubclass "NSObject" "AnimDel" $
