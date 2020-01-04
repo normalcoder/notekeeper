@@ -2,13 +2,17 @@
 
 module View.View
 ( ViewSpec
-, View
-, Subviews(..)
-, IsVertical(..)
+, View(..)
+, UIView(..)
+-- , Subviews(..)
+, Direction(..)
 -- , IsVertical(..)
 , build
+, stack
+, stackH
+, text
 , rootUiView
-, v1Spec
+-- , v1Spec
 ) where
 
 import Control.Monad
@@ -26,86 +30,113 @@ import Prelude hiding (Left, Right)
 -- Screen
 
 
-newtype ViewSpec = ViewSpec (V ())
-newtype View = View (V UIView)
-unview (View v) = v
+data View = View { _spec :: ViewSpecImpl, _uiView :: UIView }
 
-newtype UIView = UIView { _uiView :: Id }
+newtype UIView = UIView { _rawUiView :: Id }
 
-data V a = V {
- _view :: a,
- _kind :: Kind a,
+data ViewSpecImpl = ViewSpecImpl {
+ _kind :: Kind,
  _color :: Color,
  _padding :: Padding,
- _transform :: Transform3D,
- _priority :: Priority,
+ _transform :: Transform3D
+ -- _priority :: Priority,
  -- _constraints :: Constraints,
  -- _intrinsicSize :: IntrinsicSize,
- -- _subviews :: (Subviews a),
- _isScreen :: IsScreen,
- _pathComps :: [PathComp]
+ -- _isScreen :: IsScreen,
+ -- _pathComps :: [PathComp]
 }
+
+noPadding = Padding Nothing Nothing Nothing Nothing
+idT = Transform3D 1 0 0 0  0 1 0 0  0 0 1 0  0 0 0 1
+
+data ViewSpec q = ViewSpec ViewSpecImpl | Tmp [ViewSpecImpl]
 
 -- data Subviews a = Subviews Insets IsVertical [V a]
 -- data Subviews a = Subviews Direction [V a]
 
+ -- v <- build $ do
+ --  stack $ do
+ --   text "title"
+ --   text "subtitle"
+
+stack = stack_ Horizontal
+stackH = stack_ Vertical
+
+stack_ :: Direction -> ViewSpec a -> ViewSpec a
+stack_ d (Tmp vs) = ViewSpec $ ViewSpecImpl (Container Nothing d vs) white noPadding idT
+
+text :: String -> ViewSpec a
+text s = ViewSpec $ ViewSpecImpl (Label defaultFont Nothing TruncatingTail (pure s)) black noPadding idT
 
 
-newtype Tags = Tags { _tags :: [Tag] }
-data Tag = Tag { _title :: Title, _images :: [Image] }
+instance Functor ViewSpec where
+ fmap f mx = do
+  x <- mx
+  pure $ f x
+
+instance Applicative ViewSpec where
+ pure _ = Tmp []
+ mf <*> mx = do
+  f <- mf
+  x <- mx
+  pure $ f x
+
+instance Monad ViewSpec where
+ x >>= f = x >> f undefined
+ x >> y = case (x,y) of
+  (Tmp xs, Tmp ys) -> Tmp $ xs ++ ys
+  (Tmp xs, ViewSpec y) -> Tmp $ xs ++ [y]
+  (ViewSpec x, Tmp ys) -> Tmp $ [x] ++ ys
+  (ViewSpec x, ViewSpec y) -> Tmp [x, y]
+
+
+-- newtype Tags = Tags { _tags :: [Tag] }
+-- data Tag = Tag { _title :: Title, _images :: [Image] }
+
+
+-- tags = list _tags $ do
+--  -- withList _tags
+--  tag
+
+-- tag = stackH $ do
+--  title ^ do
+--   with _title
+--  overlap ^ do
+--   withElems (take 8 . _images) $ \i -> do 
+--    image ^ do
+--     rotate $ [30, 60, 15] !! i
+--  onTap $ do
+--   open tagDetails
+--   openAutoMatch tagDetails ^ do
+--    transition1
+--    transition2
+--    ...
+--   openMatchById tagDetails ^ do
+--    transition1 "view1"
+--    transition2 "view2"
+--    ...
+
+-- open:
+--  vs = old screen views
+--  ws = new screen views
+--  common = vs /\ ws -- find match for common
+--  addSubviews common to new screen (remove from old) + add (ws - common)
+--  animate forward ws + animate show new background
+
+-- close:
+--  vs = old screen views
+--  ws = new screen views
+--  common = vs /\ ws -- find match for common
+--  addSubviews common to old screen (remove from new) + ...
+--  animate backward ws + animate hide new background
 
 
 
-
-
-
-tags = list _tags $ do
- -- withList _tags
- tag
-
-tag = stackH $ do
- title ^ do
-  with _title
- overlap ^ do
-  withElems (take 8 . _images) $ \i -> do 
-   image ^ do
-    rotate $ [30, 60, 15] !! i
- onTap $ do
-  open tagDetails
-  openAutoMatch tagDetails ^ do
-   transition1
-   transition2
-   ...
-  openMatchById tagDetails ^ do
-   transition1 "view1"
-   transition2 "view2"
-   ...
-
-open:
- vs = old screen views
- ws = new screen views
- common = vs /\ ws -- find match for common
- addSubviews common to new screen (remove from old) + add (ws - common)
- animate forward ws + animate show new background
-
-close:
- vs = old screen views
- ws = new screen views
- common = vs /\ ws -- find match for common
- addSubviews common to old screen (remove from new) + ...
- animate backward ws + animate hide new background
-
-
-
-common
-
-
-
-tagDetails = stack $ do
- title ^ do
-  with _title
- grid _images ^ do
-  image 
+-- tagDetails = stack $ do
+--  title ^ do
+--   with _title
+--  grid _images ^ do
+--   image 
  
 
 
@@ -132,8 +163,8 @@ tagDetails = stack $ do
 --     year $ do
 --      priority 1
 
-data Kind a =
-   Container (Maybe Tappable) Direction [V a]
+data Kind =
+   Container (Maybe Tappable) Direction [ViewSpecImpl]
  | Label Font (Maybe LineCount) BreakMode (IO String)
  | Image (Maybe (Width, Height)) Aspect (IO UIImage)
 
@@ -163,63 +194,93 @@ newtype MinHeight = MinHeight CGFloat
 newtype MaxHeight = MaxHeight CGFloat
 
 -- check = undefined
-v1Spec = do
- ViewSpec $ V ()
-  Container
-  red
-  (Constraints Nothing Nothing Nothing Nothing)
-  (IntrinsicSize Nothing Nothing)
-  (Priority 1)
-  (Offset 0 0)
-  (Subviews
-   (Insets (Left 0) (Right 0) (Top 0) (Bottom 0))
-   Vertical
-   [s1, s2])
-  Screen
-  []
+-- v1Spec = do
+--  ViewSpec $ V ()
+--   Container
+--   red
+--   (Constraints Nothing Nothing Nothing Nothing)
+--   (IntrinsicSize Nothing Nothing)
+--   (Priority 1)
+--   (Offset 0 0)
+--   (Subviews
+--    (Insets (Left 0) (Right 0) (Top 0) (Bottom 0))
+--    Vertical
+--    [s1, s2])
+--   Screen
+--   []
 
-s1 = do
- V ()
-  Container
-  green
-  (Constraints Nothing Nothing Nothing Nothing)
-  (IntrinsicSize Nothing Nothing)
-  (Priority 1)
-  (Offset 0 0)
-  (Subviews
-   (Insets (Left 0) (Right 0) (Top 0) (Bottom 0))
-   Vertical
-   [])
-  Screen
-  []
+-- s1 = do
+--  V ()
+--   Container
+--   green
+--   (Constraints Nothing Nothing Nothing Nothing)
+--   (IntrinsicSize Nothing Nothing)
+--   (Priority 1)
+--   (Offset 0 0)
+--   (Subviews
+--    (Insets (Left 0) (Right 0) (Top 0) (Bottom 0))
+--    Vertical
+--    [])
+--   Screen
+--   []
 
-s2 = do
- V ()
-  Container
-  blue
-  (Constraints Nothing Nothing Nothing Nothing)
-  (IntrinsicSize Nothing Nothing)
-  (Priority 1)
-  (Offset 0 0)
-  (Subviews
-   (Insets (Left 0) (Right 0) (Top 0) (Bottom 0))
-   Vertical
-   [])
-  Screen
-  []
+-- s2 = do
+--  V ()
+--   Container
+--   blue
+--   (Constraints Nothing Nothing Nothing Nothing)
+--   (IntrinsicSize Nothing Nothing)
+--   (Priority 1)
+--   (Offset 0 0)
+--   (Subviews
+--    (Insets (Left 0) (Right 0) (Top 0) (Bottom 0))
+--    Vertical
+--    [])
+--   Screen
+--   []
 
-build :: ViewSpec -> IO View
-build (ViewSpec (V _ k color constr intrSize (Subviews insets isVertical subviewSpecs) isScreen pathComps)) = do
+build :: ViewSpec q -> IO View
+build (ViewSpec v) = (View v . UIView) <$> build' v
 
- v <- "new" @| "UIView"
- ("setBackgroundColor:", uiColor color) <@. v
- subviews <- traverse (pure . unview <=< build . ViewSpec) subviewSpecs
+build' :: ViewSpecImpl -> IO Id
+build' (ViewSpecImpl kind color padding transform) = case kind of
+ Label font lineCount breakMode value -> do
+  v <- "new" @| "UILabel"
+  ("setText:", getNsString =<< value) <@. v
+  pure v
+ Image size aspect img -> do
+  v <- "new" @| "UIImageView"
+  ("setImage:", _rawUiImage <$> img) <@. v
+  pure v
+ Container onTap dir vs -> do
+  c <- "new" @| "UIView"
+  traverse ((\v -> (Superview c) `addSubview` (Subview v)) <=< build') vs
+  pure c
+ 
 
- mapM_ (addSubview (Superview v) . Subview . _uiView . _view) subviews
+ -- ("setBackgroundColor:", uiColor color) <@. v
 
- pure $ View $ V (UIView v) k color constr intrSize (Subviews insets isVertical subviews) isScreen pathComps
+ --   Container (Maybe Tappable) Direction [ViewSpecImpl]
+ -- | Label Font (Maybe LineCount) BreakMode (IO String)
+ -- | Image (Maybe (Width, Height)) Aspect (IO UIImage)
 
-rootUiView (View v) = _uiView . _view $ v
+ -- _kind :: Kind,
+ -- _color :: Color,
+ -- _padding :: Padding,
+ -- _transform :: Transform3D
+
+-- build (ViewSpec (V _ k color constr intrSize (Subviews insets isVertical subviewSpecs) isScreen pathComps)) = do
+
+--  v <- "new" @| "UIView"
+--  ("setBackgroundColor:", uiColor color) <@. v
+--  subviews <- traverse (pure . unview <=< build . ViewSpec) subviewSpecs
+
+--  mapM_ (addSubview (Superview v) . Subview . _uiView . _view) subviews
+
+--  pure $ View $ V (UIView v) k color constr intrSize (Subviews insets isVertical subviews) isScreen pathComps
+
+rootUiView = undefined
+-- rootUiView (View v) = _uiView . _view $ v
  -- subviews' <- pure . Subviews insets isVertical $ mapM (pure . unview =<< build . map ViewSpec) subviews
  -- pure $ View $ V (UIView v) k color constr subviews' isScreen pathComps
 

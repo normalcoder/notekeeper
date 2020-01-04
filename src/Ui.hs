@@ -5,10 +5,11 @@ module Ui
 import Objc
 import UiKit
 import Foreign.Ptr
--- import View.View
+import View.View
 
 import Gcd
 
+import Data.Coerce
 import Control.Concurrent
 import Control.Concurrent.MVar
 import Data.IORef
@@ -29,9 +30,27 @@ startCapturing = do
 manyColors = take 20 $ cycle ["blueColor", "redColor", "greenColor", "grayColor", "lightGrayColor", "darkGrayColor", "brownColor"]
 
 
+-- tag = stackH $ do
+--  title ^ do
+--   with _title
+--  overlap ^ do
+--   withElems (take 8 . _images) $ \i -> do 
+--    image ^ do
+--     rotate $ [30, 60, 15] !! i
+
+
+
 createUi :: Id -> IO ()
 createUi vc = do
- -- rootView <- "view" @<. vc
+ rootView <- "view" @<. vc
+ v <- build $ do
+  stack $ do
+   stackH $ do
+    text "title"
+    text "year"
+   text "subtitle"
+
+ (Superview rootView) `addSubviewAndPin` (Subview . coerce . _uiView $ v)
 
  -- q <- build v1Spec
  -- v <- build $ overlap $ do

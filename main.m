@@ -62,7 +62,7 @@ void setupCaptureSession() {
         NSLog(@"ios version is < 11.1");
         return;
     }
-            
+    
     AVCaptureDeviceDiscoverySession *discoverySession =
     [AVCaptureDeviceDiscoverySession
      discoverySessionWithDeviceTypes:@[
@@ -109,7 +109,15 @@ void setupCaptureSession() {
     connection.videoOrientation = AVCaptureVideoOrientationPortrait;
     
     [captureSession startRunning];
+    
 }
+
+//UIViewController
+// startRunning
+// stopRunning
+// imageCaptured
+//
+//producer :: Producer Image
 
 //struct CGFloat2 { CGFloat a[2]; };
 //
