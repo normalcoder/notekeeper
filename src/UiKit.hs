@@ -25,12 +25,12 @@ mkUiView = do
 
 addSubview' :: Superview -> Subview -> (Rect -> Rect) -> IO ()
 addSubview' (Superview superview) (Subview subview) calcFrame = do
- -- ("setFrame:", calcFrame <$> ("frame" #<. superview)) <#. view
+ -- ("setFrame:", calcFrame <$> ("bounds" #<. superview)) <#. view
  (x,y,w,h) <- calcFrame <$> ("bounds" #<. superview)
  ("setBounds:", (0, 0, w, h)) <.#. subview
  ("setCenter:", (x + w/2, y + h/2)) <.%. subview
  -- mixAfter mixStorage superview "layoutSubviews" $ NoRet $ \_ _ _ -> do
- --  ("setFrame:", calcFrame <$> ("frame" #<. superview)) <#. view
+ --  ("setFrame:", calcFrame <$> ("bounds" #<. superview)) <#. view
  --  pure ()
  ("addSubview:", subview) <.@. superview
  pure ()
@@ -41,7 +41,7 @@ addSubviewAndPin v@(Superview superview) w@(Subview subview) = do
  mixAfter superview "layoutSubviews" $ NoRet $ \_ _ _ -> setFrameToBounds
  where
   setFrameToBounds = do
-   -- ("setFrame:", ("frame" #<. superview)) <#. subview
+   -- ("setFrame:", ("bounds" #<. superview)) <#. subview
    (x,y,w,h) <- "bounds" #<. superview
    ("setBounds:", (0, 0, w, h)) <.#. subview
    ("setCenter:", (x + w/2, y + h/2)) <.%. subview
