@@ -7,6 +7,8 @@ maintainer: email@example.com
 library
   exposed-modules:
      App
+   , AvHelpers
+   , Camera
    , HsMain
    , ObjcTypes
    , ObjcMsgSt
@@ -20,6 +22,7 @@ library
    , ObjcClassManipulations
    , Objc
    , UiKit
+   , UiKitHelpers
    , Gcd
    , Window
    , Ui
@@ -35,6 +38,7 @@ library
   build-depends:
      base
    , containers
+   , random
 --   , aeson
    , vector
 --   , vector-algorithms

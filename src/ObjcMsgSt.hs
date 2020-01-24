@@ -36,6 +36,7 @@ module ObjcMsgSt
 --, objc_msgSend_stret_Float
 --, objc_msgSend_stret_Float_apply_ptr
 , objc_msgSend_stret_CGFloat2_apply_CGFloat2_apply_ptr
+, objc_msgSend_apply_ptr_apply_block
 ) where
 
 import ObjcTypes
@@ -252,4 +253,12 @@ objc_msgSend_stret_CGFloat2_apply_CGFloat2_apply_ptr obj selName arg1 arg2 = do
    c_objc_msgSend_stret_CGFloat2_apply_CGFloat2_apply_ptr obj sel rBuffer arg1Buffer arg2
    peek rBuffer
 
+foreign import ccall safe "objc_msgSend_apply_ptr_apply_block" c_objc_msgSend_apply_ptr_apply_block :: Id -> Sel -> Id -> FunPtr (Id -> IO ()) -> IO ()
 
+foreign import ccall "wrapper" toCompletionArg1 :: (Id -> IO ()) -> IO (FunPtr (Id -> IO ()))
+
+objc_msgSend_apply_ptr_apply_block :: Id -> SelName -> Id -> (Id -> IO ()) -> IO ()
+objc_msgSend_apply_ptr_apply_block obj selName arg1 block = do
+ sel <- getSelByName selName
+ blockFunPtr <- toCompletionArg1 block
+ c_objc_msgSend_apply_ptr_apply_block obj sel arg1 blockFunPtr

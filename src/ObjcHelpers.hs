@@ -4,14 +4,19 @@ module ObjcHelpers
 , getObjectClass
 , getObjectClassName
 , toNsInteger
+, fromNsInteger
 , toNsBool
+, fromNsBool
 , NsNumberable(..)
 , floatToPtr
 , bitN
 , ptrInt
 , ptrWord
 , ptrBool
+, nsArray
 ) where
+
+import Control.Monad
 
 import Foreign
 import Foreign.C.String
@@ -23,8 +28,12 @@ import ObjcMsgOps
 
 toNsInteger = plusPtr nullPtr
 
+fromNsInteger :: Id -> Int
+fromNsInteger p = p `minusPtr` nullPtr
+
 toNsBool True = toNsInteger 1
 toNsBool False = toNsInteger 0
+fromNsBool = (/= 0) . fromNsInteger
 
 class NsNumberable a where
  mkNsNumber :: a -> IO Id
@@ -61,3 +70,11 @@ ptrWord = plusPtr nullPtr . fromIntegral
 ptrBool :: Bool -> Ptr ()
 ptrBool True = plusPtr nullPtr 1
 ptrBool False = plusPtr nullPtr 0
+
+
+nsArray os = do
+ a <- "new" @| "NSMutableArray"
+ forM_ os $ \o -> do
+  ("addObject:", o) <.@. a
+ pure a
+

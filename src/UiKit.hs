@@ -6,9 +6,11 @@ module UiKit
 , Rect
 , Subview(..)
 , Superview(..)
+, module UiKitHelpers
 ) where
 
 import Objc
+import UiKitHelpers
 
 -- newtype UiView = UiView Id
 newtype Subview = Subview Id

@@ -7,7 +7,7 @@ module UiKitHelpers
 , setTitle
 , newButton
 , setFrame
-, addSubview
+-- , addSubview
 ) where
 
 import ObjcMsg
@@ -37,7 +37,7 @@ newButton = ("buttonWithType:", system) <.@ "class" @| "UIButton"
 
 setFrame v f = ("setFrame:", f) <.#. v
 
-addSubview v b = ("addSubview:", b) <.@. v
+-- addSubview v b = ("addSubview:", b) <.@. v
 
 
 -- UIControlStateNormal = 0

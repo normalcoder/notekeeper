@@ -46,6 +46,8 @@ void startCapturing() {
     }
 }
 SampleBufferDelegate *delegate1;
+
+
 void setupCaptureSession() {
     UIView *mainView = UIApplication.sharedApplication.windows[0].rootViewController.view;
 
