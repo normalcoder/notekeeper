@@ -9,6 +9,7 @@ library
      App
    , AvHelpers
    , Camera
+   , IOHelpers
    , HsMain
    , ObjcTypes
    , ObjcMsgSt

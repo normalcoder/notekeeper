@@ -14,6 +14,8 @@ module ObjcHelpers
 , ptrWord
 , ptrBool
 , nsArray
+, mkDelegate
+, nullRet
 ) where
 
 import Control.Monad
@@ -25,6 +27,7 @@ import Data.Bits hiding (bit)
 import ObjcTypes
 import ObjcMsg
 import ObjcMsgOps
+import ObjcClassManipulations
 
 toNsInteger = plusPtr nullPtr
 
@@ -78,3 +81,8 @@ nsArray os = do
   ("addObject:", o) <.@. a
  pure a
 
+mkDelegate className methods = do
+ registerSubclass "NSObject" className $ map (\(name, action) -> (InstanceMethod, name, action)) methods
+ "new" @| className
+
+nullRet a = a >> pure nullPtr
