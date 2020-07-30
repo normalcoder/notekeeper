@@ -7,12 +7,15 @@ import Foreign.Ptr
 --import View.View
 import Ui
 
+import Control.Concurrent
+
 
 foreign import ccall safe "UIApplicationMain" c_UIApplicationMain :: Int -> Ptr () -> Id -> Id -> IO ()
 
 appDelegateClassName = "AppDelegate"
 
 run = do
+ --forkIO $ mapM_ (\_ -> print "!!2simple_string123422") [1..1000000]
  createAppDelegate appDelegateClassName
  c_UIApplicationMain 0 nullPtr nullPtr =<< getNsString appDelegateClassName
 
