@@ -21,10 +21,11 @@ note = picture
 
 3. Take note with some tag
 4. Open notes with tag
-5. Add tag
-6. Delete tag
-7. Delete note
-8. Assign tag to note
+5. Open note from notes grid
+6. Add tag
+7. Delete tag
+8. Delete note
+9. Assign tag to note
 
 -}
 

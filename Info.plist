@@ -43,7 +43,5 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>NSCameraUsageDescription - 2</key>
-	<string>We need it to take pictures of rectangles</string>
 </dict>
 </plist>
