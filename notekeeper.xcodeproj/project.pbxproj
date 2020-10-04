@@ -15,6 +15,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3F81968A252A6B3000758A04 /* notekeeper.cabal */ = {isa = PBXFileReference; lastKnownFileType = text; path = notekeeper.cabal; sourceTree = "<group>"; };
 		E60862152468924000486ECB /* src */ = {isa = PBXFileReference; lastKnownFileType = folder; path = src; sourceTree = "<group>"; };
 		E60862162468933100486ECB /* build.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = build.sh; sourceTree = "<group>"; };
 		E68F4AED21EB4F8900ECEABD /* notekeeper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = notekeeper.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -50,6 +51,7 @@
 				E68F4B0621EB4FE900ECEABD /* Frameworks */,
 				E68F4AEE21EB4F8900ECEABD /* Products */,
 				E60862162468933100486ECB /* build.sh */,
+				3F81968A252A6B3000758A04 /* notekeeper.cabal */,
 				E60862152468924000486ECB /* src */,
 			);
 			sourceTree = "<group>";

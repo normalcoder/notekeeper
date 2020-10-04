@@ -28,10 +28,11 @@ library
    , Window
    , Ui
    , Menu
-   , View.View
    , View.Color
    , View.Image
    , View.Label
+   , View.Layout
+   , View.View
   c-sources:
      src/funcSt.c
    , src/objc_msgSendN.c

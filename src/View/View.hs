@@ -1,9 +1,11 @@
 {-# language ScopedTypeVariables #-}
 
 module View.View
-( ViewSpec
+( ViewSpec(..)
+, ViewSpecImpl(..)
+, Kind(..)
 , View(..)
-, UIView(..)
+, ViewTree(..)
 -- , Subviews(..)
 , Direction(..)
 -- , IsVertical(..)
@@ -11,8 +13,9 @@ module View.View
 , stack
 , stackH
 , text
-, rootUiView
+-- , rootUiView
 -- , v1Spec
+, view
 ) where
 
 import Control.Monad
@@ -30,9 +33,9 @@ import Prelude hiding (Left, Right)
 -- Screen
 
 
-data View = View { _spec :: ViewSpecImpl, _uiView :: UIView }
+data View = View { _spec :: ViewSpecImpl, _viewTree :: ViewTree }
 
-newtype UIView = UIView { _rawUiView :: Id }
+data ViewTree = ViewTree { _rootView :: UIView, _subviews :: [ViewTree] }
 
 data ViewSpecImpl = ViewSpecImpl {
  _kind :: Kind,
@@ -49,7 +52,7 @@ data ViewSpecImpl = ViewSpecImpl {
 noPadding = Padding Nothing Nothing Nothing Nothing
 idT = Transform3D 1 0 0 0  0 1 0 0  0 0 1 0  0 0 0 1
 
-data ViewSpec q = ViewSpec ViewSpecImpl | Tmp [ViewSpecImpl]
+data ViewSpec q = ViewSpec { _impl :: ViewSpecImpl } | Tmp [ViewSpecImpl]
 
 -- data Subviews a = Subviews Insets IsVertical [V a]
 -- data Subviews a = Subviews Direction [V a]
@@ -59,15 +62,19 @@ data ViewSpec q = ViewSpec ViewSpecImpl | Tmp [ViewSpecImpl]
  --   text "title"
  --   text "subtitle"
 
-stack = stack_ Horizontal
-stackH = stack_ Vertical
+stack = stack_ Vertical
+stackH = stack_ Horizontal
 
 stack_ :: Direction -> ViewSpec a -> ViewSpec a
 stack_ d (Tmp vs) = ViewSpec $ ViewSpecImpl (Container Nothing d vs) white noPadding idT
+stack_ _ spec = spec
 
 text :: String -> ViewSpec a
 text s = ViewSpec $ ViewSpecImpl (Label defaultFont Nothing TruncatingTail (pure s)) black noPadding idT
 
+
+view :: Color -> ViewSpec a
+view color = ViewSpec $ ViewSpecImpl (Container Nothing Vertical []) color noPadding idT
 
 instance Functor ViewSpec where
  fmap f mx = do
@@ -172,7 +179,7 @@ data Tappable = Tappable (IO ())
 
 newtype PathComp = PathComp String
 
-data Direction = Vertical | Horizontal | Overlap
+data Direction = Vertical | Horizontal | Overlap deriving (Eq, Show)
 data IsScreen = Screen | NotScreen
 
 data Insets = Insets Left Right Top Bottom
@@ -240,23 +247,25 @@ newtype MaxHeight = MaxHeight CGFloat
 --   []
 
 build :: ViewSpec q -> IO View
-build (ViewSpec v) = (View v . UIView) <$> build' v
+build (ViewSpec v) = View v <$> build' v
 
-build' :: ViewSpecImpl -> IO Id
+build' :: ViewSpecImpl -> IO ViewTree
 build' (ViewSpecImpl kind color padding transform) = case kind of
  Label font lineCount breakMode value -> do
   v <- "new" @| "UILabel"
   ("setText:", getNsString =<< value) <@. v
-  pure v
+  pure $ ViewTree (UIView v) []
  Image size aspect img -> do
   v <- "new" @| "UIImageView"
   ("setImage:", _rawUiImage <$> img) <@. v
-  pure v
+  pure $ ViewTree (UIView v) []
  Container onTap dir vs -> do
   c <- "new" @| "UIView"
-  traverse ((\v -> (Superview c) `addSubview` (Subview v)) <=< build') vs
-  pure c
- 
+  ("setBackgroundColor:", uiColor color) <@. c
+  views <- traverse build' vs
+  traverse (\(ViewTree (UIView v) _) -> Superview c `addSubview` Subview v) views
+  pure $ ViewTree (UIView c) views
+
 
  -- ("setBackgroundColor:", uiColor color) <@. v
 
@@ -279,7 +288,7 @@ build' (ViewSpecImpl kind color padding transform) = case kind of
 
 --  pure $ View $ V (UIView v) k color constr intrSize (Subviews insets isVertical subviews) isScreen pathComps
 
-rootUiView = undefined
+-- rootUiView = undefined
 -- rootUiView (View v) = _uiView . _view $ v
  -- subviews' <- pure . Subviews insets isVertical $ mapM (pure . unview =<< build . map ViewSpec) subviews
  -- pure $ View $ V (UIView v) k color constr subviews' isScreen pathComps

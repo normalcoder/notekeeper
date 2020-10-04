@@ -1,8 +1,9 @@
 module UiKit
 ( mkUiView
+, UIView(..)
 , addSubview
 , addSubview'
-, addSubviewAndPin
+, setFrame
 , Rect
 , Subview(..)
 , Superview(..)
@@ -12,6 +13,7 @@ module UiKit
 import Objc
 import UiKitHelpers
 
+newtype UIView = UIView { _rawUiView :: Id } deriving (Show)
 -- newtype UiView = UiView Id
 newtype Subview = Subview Id
 newtype Superview = Superview Id
@@ -37,17 +39,9 @@ addSubview' (Superview superview) (Subview subview) calcFrame = do
  ("addSubview:", subview) <.@. superview
  pure ()
 
-addSubviewAndPin v@(Superview superview) w@(Subview subview) = do
- addSubview v w
- setFrameToBounds
- mixAfter superview "layoutSubviews" $ NoRet $ \_ _ _ -> setFrameToBounds
- where
-  setFrameToBounds = do
-   -- ("setFrame:", ("bounds" #<. superview)) <#. subview
-   (x,y,w,h) <- "bounds" #<. superview
-   ("setBounds:", (0, 0, w, h)) <.#. subview
-   ("setCenter:", (x + w/2, y + h/2)) <.%. subview
-   pure ()
+setFrame (x, y, w, h) (UIView v) = do
+ ("setBounds:", (0, 0, w, h)) <.#. v
+ ("setCenter:", (x + w/2, y + h/2)) <.%. v
 
 addSubview (Superview superview) (Subview subview) = do
  ("addSubview:", subview) <.@. superview

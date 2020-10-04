@@ -5,6 +5,51 @@ module Ui
 import Objc
 import UiKit
 import Camera
+import View.View
+import View.Color
+import View.Layout
+
+ui1 = stack $ do
+ view yellow
+ stackH $ do
+  view red
+  view cyan
+
+ui = stackH $ do
+ sequence $ replicate 10 ui1
+
+
+createUi :: Id -> IO ()
+createUi vc = do
+ rootView <- "view" @<. vc
+
+-- camera <- createCameraUi
+-- Superview rootView `addSubviewAndPin` Subview camera
+
+ -- v <- _rawUiView . _uiView <$> build ui
+ -- Superview rootView `addSubviewAndPin` Subview v
+ view <- build ui
+ Superview rootView `addSubviewAndPin` view
+ pure ()
+
+
+{-
+ view <- build ui
+
+ stack $ do
+  view yellow
+  view red
+  stackH $ do
+   view brown
+   view cyan
+
+  text "title"
+  text "subtitle"
+-}
+ -- v <- build $ do
+ --  stack $ do
+ --   text "title"
+ --   text "subtitle"
 
 {-
 
@@ -28,8 +73,3 @@ note = picture
 9. Assign tag to note
 
 -}
-
-createUi :: Id -> IO ()
-createUi vc = do
- rootView <- "view" @<. vc
- createCameraUi rootView

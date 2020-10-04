@@ -6,7 +6,7 @@ module UiKitHelpers
 , touchUpInside
 , setTitle
 , newButton
-, setFrame
+-- , setFrame
 -- , addSubview
 ) where
 
@@ -35,7 +35,7 @@ setTitle control state t = getNsString t >>= \t -> ("setTitle:forState:", [t, st
 
 newButton = ("buttonWithType:", system) <.@ "class" @| "UIButton"
 
-setFrame v f = ("setFrame:", f) <.#. v
+-- setFrame v f = ("setFrame:", f) <.#. v
 
 -- addSubview v b = ("addSubview:", b) <.@. v
 
