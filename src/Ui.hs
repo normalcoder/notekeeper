@@ -10,7 +10,9 @@ import View.Color
 import View.Layout
 
 ui1 = stack $ do
- view yellow
+ stackH $ do
+  view green
+  view yellow
  stackH $ do
   view red
   view cyan

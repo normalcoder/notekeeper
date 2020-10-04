@@ -3,7 +3,7 @@ module UiKit
 , UIView(..)
 , addSubview
 , addSubview'
-, setFrame
+, safeSetFrame
 , Rect
 , Subview(..)
 , Superview(..)
@@ -39,9 +39,10 @@ addSubview' (Superview superview) (Subview subview) calcFrame = do
  ("addSubview:", subview) <.@. superview
  pure ()
 
-setFrame (x, y, w, h) (UIView v) = do
+safeSetFrame (x, y, w, h) (UIView v) = do
  ("setBounds:", (0, 0, w, h)) <.#. v
  ("setCenter:", (x + w/2, y + h/2)) <.%. v
+ pure ()
 
 addSubview (Superview superview) (Subview subview) = do
  ("addSubview:", subview) <.@. superview

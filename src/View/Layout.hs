@@ -2,21 +2,22 @@ module View.Layout
 ( addSubviewAndPin
 ) where
 
+import Control.Monad
+
 import Objc
 import UiKitHelpers
 import UiKit
 import View.View
 
-addSubviewAndPin v@(Superview superview) subviewDef@(View _ (ViewTree (UIView subview) _)) = do
- addSubview v (Subview subview)
+addSubviewAndPin v@(Superview superview) subviewDef@(View spec (ViewTree subview@(UIView rawSubview) _)) = do
+ addSubview v (Subview rawSubview)
  setFrameToBounds
  mixAfter superview "layoutSubviews" $ NoRet $ \_ _ _ -> setFrameToBounds
  where
   setFrameToBounds = do
-   -- ("setFrame:", ("bounds" #<. superview)) <#. subview
-   (x,y,w,h) <- "bounds" #<. superview
-   ("setBounds:", (0, 0, w, h)) <.#. subview
-   ("setCenter:", (x + w/2, y + h/2)) <.%. subview
+   f@(x,y,w,h) <- "bounds" #<. superview
+   when (not . isContainer $ _kind spec) $ do
+    safeSetFrame f subview
    layoutSubviews ((w,h), subviewDef)
 
 layoutSubviews :: ((CGFloat, CGFloat), View) -> IO ()
@@ -28,7 +29,7 @@ layoutSubviews ((w,h), View spec (ViewTree view subviews)) = do
    pure ()
    where
    layoutView (i, viewSpec, (ViewTree v _)) = do
-    setFrame (x, y, width, height) v
+    safeSetFrame (x, y, width, height) v
     pure (width, height)
     where
     x = if horizontal then fromIntegral i * width else 0

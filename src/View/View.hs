@@ -4,6 +4,7 @@ module View.View
 ( ViewSpec(..)
 , ViewSpecImpl(..)
 , Kind(..)
+, isContainer
 , View(..)
 , ViewTree(..)
 -- , Subviews(..)
@@ -48,6 +49,10 @@ data ViewSpecImpl = ViewSpecImpl {
  -- _isScreen :: IsScreen,
  -- _pathComps :: [PathComp]
 }
+
+isContainer kind = case kind of
+ Container _ _ _ -> True
+ _ -> False
 
 noPadding = Padding Nothing Nothing Nothing Nothing
 idT = Transform3D 1 0 0 0  0 1 0 0  0 0 1 0  0 0 0 1
