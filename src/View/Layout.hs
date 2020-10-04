@@ -20,7 +20,6 @@ addSubviewAndPin v@(Superview superview) subviewDef@(View spec (ViewTree subview
     safeSetFrame f subview
    layoutSubviews ((w,h), subviewDef)
 
-layoutSubviews :: ((CGFloat, CGFloat), View) -> IO ()
 layoutSubviews ((w,h), View spec (ViewTree view subviews)) = do
  case _kind spec of
   Container _ d specImpls -> do
