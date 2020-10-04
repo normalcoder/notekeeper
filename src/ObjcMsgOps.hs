@@ -41,6 +41,11 @@ module ObjcMsgOps
 , (<.@@), op_apply_unIOed_args_IOed_obj
 , (<.@@.), op_apply_unIOed_args_unIOed_obj
 
+, (</), op_apply_Int_IOed_arg_IOed_obj
+, (</.), op_apply_Int_IOed_arg_unIOed_obj
+, (<./), op_apply_Int_unIOed_arg_IOed_obj
+, (<./.), op_apply_Int_unIOed_arg_unIOed_obj
+
 , (%<), op_stret_CGFloat2_IOed_obj
 , (%<.), op_stret_CGFloat2_unIOed_obj
 
@@ -139,6 +144,8 @@ module ObjcMsgOps
 
 ) where
 
+import Foreign.Ptr
+
 import Prelude hiding ((<*))
 import ObjcTypes
 import ObjcMsg
@@ -191,6 +198,20 @@ infixr 5 <.@@
 op_apply_unIOed_args_unIOed_obj (selName, args) obj = objc_msgSend obj selName args
 (<.@@.) = op_apply_unIOed_args_unIOed_obj
 infixr 5 <.@@.
+
+
+op_apply_Int_IOed_arg_IOed_obj (selName, argAct) objAct = argAct >>= \arg -> op_apply_Int_unIOed_arg_IOed_obj (selName, arg) objAct
+(</) = op_apply_Int_IOed_arg_IOed_obj
+infixr 5 </
+op_apply_Int_IOed_arg_unIOed_obj (selName, argAct) obj = argAct >>= \arg -> op_apply_Int_unIOed_arg_unIOed_obj (selName, arg) obj
+(</.) = op_apply_Int_IOed_arg_unIOed_obj
+infixr 5 </.
+op_apply_Int_unIOed_arg_IOed_obj = (=<<) . op_apply_Int_unIOed_arg_unIOed_obj
+(<./) = op_apply_Int_unIOed_arg_IOed_obj
+infixr 5 <./
+op_apply_Int_unIOed_arg_unIOed_obj (selName, arg) obj = objc_msgSend obj selName [nullPtr `plusPtr` arg]
+(<./.) = op_apply_Int_unIOed_arg_unIOed_obj
+infixr 5 <./.
 
 
 op_stret_CGFloat2_IOed_obj :: SelName -> (IO Id) -> IO CGFloat2

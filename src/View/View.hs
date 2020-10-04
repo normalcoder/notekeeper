@@ -13,6 +13,7 @@ module View.View
 , build
 , stack
 , stackH
+, overlap
 , text
 -- , rootUiView
 -- , v1Spec
@@ -20,6 +21,7 @@ module View.View
 ) where
 
 import Control.Monad
+import Data.Maybe
 
 import Objc
 import View.Label
@@ -69,6 +71,7 @@ data ViewSpec q = ViewSpec { _impl :: ViewSpecImpl } | Tmp [ViewSpecImpl]
 
 stack = stack_ Vertical
 stackH = stack_ Horizontal
+overlap = stack_ Overlap
 
 stack_ :: Direction -> ViewSpec a -> ViewSpec a
 stack_ d (Tmp vs) = ViewSpec $ ViewSpecImpl (Container Nothing d vs) white noPadding idT
@@ -259,6 +262,7 @@ build' (ViewSpecImpl kind color padding transform) = case kind of
  Label font lineCount breakMode value -> do
   v <- "new" @| "UILabel"
   ("setText:", getNsString =<< value) <@. v
+  ("setNumberOfLines:", fromMaybe 0 $ _rawLineCount <$> lineCount) <./. v
   pure $ ViewTree (UIView v) []
  Image size aspect img -> do
   v <- "new" @| "UIImageView"

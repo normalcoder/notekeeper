@@ -9,15 +9,18 @@ import View.View
 import View.Color
 import View.Layout
 
-ui1 = stack $ do
- stackH $ do
+ui1 = stackH $ do
+ stack $ do
   view green
   view yellow
- stackH $ do
+ overlap $ do
+  view lightGray
+  text "qwe123 fdjh giowi 9123847 ifd -- ldlkw 123yhjkh j1h23jk"
+ stack $ do
   view red
   view cyan
 
-ui = stackH $ do
+ui = stack $ do
  sequence $ replicate 10 ui1
 
 
