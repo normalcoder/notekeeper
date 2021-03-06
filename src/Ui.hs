@@ -2,6 +2,8 @@ module Ui
 ( createUi
 ) where
 
+import Control.Monad
+
 import Objc
 import UiKit
 import Camera
@@ -9,19 +11,23 @@ import View.View
 import View.Color
 import View.Layout
 
-ui1 = stackH $ do
+ui1 i = stackH $ do
  stack $ do
   view green
   view yellow
- overlap $ do
-  view lightGray
-  text "qwe123 fdjh giowi 9123847 ifd -- ldlkw 123yhjkh j1h23jk"
+ when (odd i) $ do
+  overlap $ do
+   view lightGray
+   text "qwe123 fdjh giowi 9123847 ifd xx ldlkw 123yhjkh j1h23jk"
  stack $ do
   view red
   view cyan
 
-ui = stack $ do
- sequence $ replicate 10 ui1
+ui = scroll $ stack $ do
+ sequence . take 11 $ zipWith ($) (repeat ui1) [0..]
+
+--ui_ = scroll $ do
+-- ui
 
 
 createUi :: Id -> IO ()

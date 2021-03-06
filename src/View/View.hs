@@ -11,6 +11,7 @@ module View.View
 , Direction(..)
 -- , IsVertical(..)
 , build
+, scroll
 , stack
 , stackH
 , overlap
@@ -69,13 +70,17 @@ data ViewSpec q = ViewSpec { _impl :: ViewSpecImpl } | Tmp [ViewSpecImpl]
  --   text "title"
  --   text "subtitle"
 
+scroll :: ViewSpec a -> ViewSpec a
+scroll (Tmp _) = undefined
+scroll (ViewSpec impl) = ViewSpec $ ViewSpecImpl (Scroll impl) white noPadding idT
+
 stack = stack_ Vertical
 stackH = stack_ Horizontal
 overlap = stack_ Overlap
 
 stack_ :: Direction -> ViewSpec a -> ViewSpec a
 stack_ d (Tmp vs) = ViewSpec $ ViewSpecImpl (Container Nothing d vs) white noPadding idT
-stack_ _ spec = spec
+stack_ _ spec = undefined
 
 text :: String -> ViewSpec a
 text s = ViewSpec $ ViewSpecImpl (Label defaultFont Nothing TruncatingTail (pure s)) black noPadding idT
@@ -180,6 +185,7 @@ instance Monad ViewSpec where
 
 data Kind =
    Container (Maybe Tappable) Direction [ViewSpecImpl]
+ | Scroll ViewSpecImpl
  | Label Font (Maybe LineCount) BreakMode (IO String)
  | Image (Maybe (Width, Height)) Aspect (IO UIImage)
 
@@ -274,6 +280,11 @@ build' (ViewSpecImpl kind color padding transform) = case kind of
   views <- traverse build' vs
   traverse (\(ViewTree (UIView v) _) -> Superview c `addSubview` Subview v) views
   pure $ ViewTree (UIView c) views
+ Scroll v -> do
+  c <- "new" @| "UIScrollView"
+  viewInTree@(ViewTree (UIView v) _) <- build' v
+  Superview c `addSubview` Subview v
+  pure $ ViewTree (UIView c) [viewInTree]
 
 
  -- ("setBackgroundColor:", uiColor color) <@. v

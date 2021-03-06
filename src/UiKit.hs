@@ -1,9 +1,11 @@
 module UiKit
 ( mkUiView
 , UIView(..)
+, UIScrollView(..)
 , addSubview
 , addSubview'
 , safeSetFrame
+, setContentSize
 , Rect
 , Subview(..)
 , Superview(..)
@@ -14,6 +16,7 @@ import Objc
 import UiKitHelpers
 
 newtype UIView = UIView { _rawUiView :: Id } deriving (Show)
+newtype UIScrollView = UIScrollView UIView deriving (Show)
 -- newtype UiView = UiView Id
 newtype Subview = Subview Id
 newtype Superview = Superview Id
@@ -46,4 +49,8 @@ safeSetFrame (x, y, w, h) (UIView v) = do
 
 addSubview (Superview superview) (Subview subview) = do
  ("addSubview:", subview) <.@. superview
+ pure ()
+
+setContentSize size (UIScrollView (UIView v)) = do
+ ("setContentSize:", size) <.%. v
  pure ()

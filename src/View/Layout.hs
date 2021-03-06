@@ -37,6 +37,13 @@ layoutSubviews ((w,h), View spec (ViewTree view subviews)) = do
    height = if vertical then h / fromIntegral n else h
    horizontal = d == Horizontal
    vertical = d == Vertical
+  Scroll specImpl -> do
+   let subviewInTree@(ViewTree subview _) = head subviews
+   safeSetFrame (0, 0, w, h) subview
+   setContentSize (0, 1000) (UIScrollView view)
+   layoutSubviews ((w,h), View specImpl subviewInTree)
+   pure ()
+
   _ -> pure ()
  where
  n = length subviews
