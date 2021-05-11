@@ -6,9 +6,12 @@ module View.View
 , Kind(..)
 , isContainer
 , View(..)
-, ViewTree(..)
+, ViewTree
+, Width(..)
+, Height(..)
 -- , Subviews(..)
 , Direction(..)
+, DesiredSize(..)
 -- , IsVertical(..)
 , build
 , scroll
@@ -16,18 +19,21 @@ module View.View
 , stackH
 , overlap
 , text
+, width
 -- , rootUiView
 -- , v1Spec
 , view
 ) where
 
 import Control.Monad
+import Control.Applicative
 import Data.Maybe
 
 import Objc
 import View.Label
 import View.Image
 import View.Color
+import Tree
 
 import UiKit
 
@@ -37,30 +43,77 @@ import Prelude hiding (Left, Right)
 -- Screen
 
 
-data View = View { _spec :: ViewSpecImpl, _viewTree :: ViewTree }
+data View = View { _spec :: ViewSpecImpl, _viewTree :: ViewTree } deriving (Show)
 
-data ViewTree = ViewTree { _rootView :: UIView, _subviews :: [ViewTree] }
+type ViewTree = Tree UIView
 
 data ViewSpecImpl = ViewSpecImpl {
  _kind :: Kind,
  _color :: Color,
- _padding :: Padding,
- _transform :: Transform3D
+ _desiredSize :: DesiredSize
+ -- _padding :: Padding,
+ -- _transform :: Transform3D,
  -- _priority :: Priority,
  -- _constraints :: Constraints,
  -- _intrinsicSize :: IntrinsicSize,
  -- _isScreen :: IsScreen,
  -- _pathComps :: [PathComp]
-}
+} deriving (Show)
+
+data Kind =
+   Container (Maybe Tappable) Direction [ViewSpecImpl]
+ | Scroll ViewSpecImpl
+ | Label Font (Maybe LineCount) BreakMode (GetInfo String)
+ | Image Aspect (GetInfo UIImage) deriving (Show)
+ -- | Image (Maybe (Width, Height)) Aspect (GetInfo UIImage) deriving (Show)
+
+data Tappable = Tappable (IO ())
+
+newtype GetInfo a = GetInfo (IO a)
+
+instance Show (GetInfo a) where
+ show _ = "GetInfo"
+
+instance Show Tappable where
+ show _ = "Tappable"
+
+newtype PathComp = PathComp String deriving (Show)
+
+data Direction = Vertical | Horizontal | Overlap deriving (Eq, Show)
+data IsScreen = Screen | NotScreen deriving (Show)
+
+data Insets = Insets Left Right Top Bottom deriving (Show)
+newtype Left = Left CGFloat deriving (Show)
+newtype Right = Right CGFloat deriving (Show)
+newtype Top = Top CGFloat deriving (Show)
+newtype Bottom = Bottom CGFloat deriving (Show)
+
+
+newtype Priority = Priority Double deriving (Show)
+data Padding = Padding (Maybe Left) (Maybe Right) (Maybe Top) (Maybe Bottom) deriving (Show)
+data Constraints = Constraints (Maybe MinWidth) (Maybe MaxWidth) (Maybe MinHeight) (Maybe MaxHeight) deriving (Show)
+data IntrinsicSize = IntrinsicSize (Maybe Width) (Maybe Height) deriving (Show)
+data DesiredSize = DesiredSize (Maybe Width) (Maybe Height) deriving (Show)
+newtype Width = Width CGFloat deriving (Show, Eq, Ord)
+newtype Height = Height CGFloat deriving (Show, Eq, Ord)
+newtype MinWidth = MinWidth CGFloat deriving (Show, Eq, Ord)
+newtype MaxWidth = MaxWidth CGFloat deriving (Show, Eq, Ord)
+newtype MinHeight = MinHeight CGFloat deriving (Show, Eq, Ord)
+newtype MaxHeight = MaxHeight CGFloat deriving (Show, Eq, Ord)
+
+instance Semigroup DesiredSize where
+ (DesiredSize w1 h1) <> (DesiredSize w2 h2) = DesiredSize (w1 <|> w2) (h1 <|> h2)
 
 isContainer kind = case kind of
  Container _ _ _ -> True
  _ -> False
 
 noPadding = Padding Nothing Nothing Nothing Nothing
+noSize = DesiredSize Nothing Nothing
 idT = Transform3D 1 0 0 0  0 1 0 0  0 0 1 0  0 0 0 1
 
-data ViewSpec q = ViewSpec { _impl :: ViewSpecImpl } | Tmp [ViewSpecImpl]
+-- data ViewSpec q = ViewSpec { _impl :: ViewSpecImpl } | Tmp [ViewSpecImpl] deriving (Show)
+data ViewSpec q = Tmp DesiredSize [ViewSpecImpl] deriving (Show)
 
 -- data Subviews a = Subviews Insets IsVertical [V a]
 -- data Subviews a = Subviews Direction [V a]
@@ -71,23 +124,26 @@ data ViewSpec q = ViewSpec { _impl :: ViewSpecImpl } | Tmp [ViewSpecImpl]
  --   text "subtitle"
 
 scroll :: ViewSpec a -> ViewSpec a
-scroll (Tmp _) = undefined
-scroll (ViewSpec impl) = ViewSpec $ ViewSpecImpl (Scroll impl) white noPadding idT
+--scroll (Tmp _) = undefined
+scroll (Tmp _ (impl:_)) = Tmp noSize [ViewSpecImpl (Scroll impl) white noSize]
 
 stack = stack_ Vertical
 stackH = stack_ Horizontal
 overlap = stack_ Overlap
 
+width :: Double -> ViewSpec a
+width w = Tmp (DesiredSize (Just $ Width w) Nothing) []
+
 stack_ :: Direction -> ViewSpec a -> ViewSpec a
-stack_ d (Tmp vs) = ViewSpec $ ViewSpecImpl (Container Nothing d vs) white noPadding idT
-stack_ _ spec = undefined
+stack_ d (Tmp s vs) = Tmp noSize [ViewSpecImpl (Container Nothing d vs) white s]
+-- stack_ _ spec = undefined
 
 text :: String -> ViewSpec a
-text s = ViewSpec $ ViewSpecImpl (Label defaultFont Nothing TruncatingTail (pure s)) black noPadding idT
+text s = Tmp noSize [ViewSpecImpl (Label defaultFont Nothing TruncatingTail (GetInfo $ pure s)) black noSize]
 
 
 view :: Color -> ViewSpec a
-view color = ViewSpec $ ViewSpecImpl (Container Nothing Vertical []) color noPadding idT
+view color = Tmp noSize [ViewSpecImpl (Container Nothing Vertical []) color noSize]
 
 instance Functor ViewSpec where
  fmap f mx = do
@@ -95,7 +151,7 @@ instance Functor ViewSpec where
   pure $ f x
 
 instance Applicative ViewSpec where
- pure _ = Tmp []
+ pure _ = Tmp noSize []
  mf <*> mx = do
   f <- mf
   x <- mx
@@ -104,10 +160,10 @@ instance Applicative ViewSpec where
 instance Monad ViewSpec where
  x >>= f = x >> f undefined
  x >> y = case (x,y) of
-  (Tmp xs, Tmp ys) -> Tmp $ xs ++ ys
-  (Tmp xs, ViewSpec y) -> Tmp $ xs ++ [y]
-  (ViewSpec x, Tmp ys) -> Tmp $ [x] ++ ys
-  (ViewSpec x, ViewSpec y) -> Tmp [x, y]
+  (Tmp size1 xs, Tmp size2 ys) -> Tmp (size1 <> size2) $ xs ++ ys
+--  (Tmp xs, ViewSpec y) -> Tmp $ xs ++ [y]
+--  (ViewSpec x, Tmp ys) -> Tmp $ [x] ++ ys
+--  (ViewSpec x, ViewSpec y) -> Tmp [x, y]
 
 
 -- newtype Tags = Tags { _tags :: [Tag] }
@@ -183,37 +239,6 @@ instance Monad ViewSpec where
 --     year $ do
 --      priority 1
 
-data Kind =
-   Container (Maybe Tappable) Direction [ViewSpecImpl]
- | Scroll ViewSpecImpl
- | Label Font (Maybe LineCount) BreakMode (IO String)
- | Image (Maybe (Width, Height)) Aspect (IO UIImage)
-
-data Tappable = Tappable (IO ())
-
-newtype PathComp = PathComp String
-
-data Direction = Vertical | Horizontal | Overlap deriving (Eq, Show)
-data IsScreen = Screen | NotScreen
-
-data Insets = Insets Left Right Top Bottom
-newtype Left = Left CGFloat
-newtype Right = Right CGFloat
-newtype Top = Top CGFloat
-newtype Bottom = Bottom CGFloat
-
-
-newtype Priority = Priority Double
-data Padding = Padding (Maybe Left) (Maybe Right) (Maybe Top) (Maybe Bottom)
-data Constraints = Constraints (Maybe MinWidth) (Maybe MaxWidth) (Maybe MinHeight) (Maybe MaxHeight)
-data IntrinsicSize = IntrinsicSize (Maybe Width) (Maybe Height)
-newtype Width = Width CGFloat
-newtype Height = Height CGFloat
-newtype MinWidth = MinWidth CGFloat
-newtype MaxWidth = MaxWidth CGFloat
-newtype MinHeight = MinHeight CGFloat
-newtype MaxHeight = MaxHeight CGFloat
-
 -- check = undefined
 -- v1Spec = do
 --  ViewSpec $ V ()
@@ -261,30 +286,32 @@ newtype MaxHeight = MaxHeight CGFloat
 --   []
 
 build :: ViewSpec q -> IO View
-build (ViewSpec v) = View v <$> build' v
+build spec@(Tmp _ (v:_)) = do
+ putStrLn $ "!!build spec: " ++ show spec
+ View v <$> build' v
 
 build' :: ViewSpecImpl -> IO ViewTree
-build' (ViewSpecImpl kind color padding transform) = case kind of
- Label font lineCount breakMode value -> do
+build' (ViewSpecImpl kind color size) = case kind of
+ Label font lineCount breakMode (GetInfo value) -> do
   v <- "new" @| "UILabel"
   ("setText:", getNsString =<< value) <@. v
   ("setNumberOfLines:", fromMaybe 0 $ _rawLineCount <$> lineCount) <./. v
-  pure $ ViewTree (UIView v) []
- Image size aspect img -> do
+  pure $ Node (UIView v) []
+ Image aspect (GetInfo img) -> do
   v <- "new" @| "UIImageView"
   ("setImage:", _rawUiImage <$> img) <@. v
-  pure $ ViewTree (UIView v) []
+  pure $ Node (UIView v) []
  Container onTap dir vs -> do
   c <- "new" @| "UIView"
   ("setBackgroundColor:", uiColor color) <@. c
   views <- traverse build' vs
-  traverse (\(ViewTree (UIView v) _) -> Superview c `addSubview` Subview v) views
-  pure $ ViewTree (UIView c) views
+  traverse (\(Node (UIView v) _) -> Superview c `addSubview` Subview v) views
+  pure $ Node (UIView c) views
  Scroll v -> do
   c <- "new" @| "UIScrollView"
-  viewInTree@(ViewTree (UIView v) _) <- build' v
+  viewInTree@(Node (UIView v) _) <- build' v
   Superview c `addSubview` Subview v
-  pure $ ViewTree (UIView c) [viewInTree]
+  pure $ Node (UIView c) [viewInTree]
 
 
  -- ("setBackgroundColor:", uiColor color) <@. v

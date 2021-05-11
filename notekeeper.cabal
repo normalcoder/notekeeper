@@ -22,6 +22,7 @@ library
    , ObjcFunPtr
    , ObjcClassManipulations
    , Objc
+   , Tree
    , UiKit
    , UiKitHelpers
    , Gcd

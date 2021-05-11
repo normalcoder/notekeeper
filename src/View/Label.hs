@@ -7,10 +7,10 @@ module View.Label
 
 import ObjcMsgSt
 
-data Font = Font FontName FontSize
-newtype FontName = FontName String 
-newtype FontSize = FontSize CGFloat
-newtype LineCount = LineCount { _rawLineCount :: Int }
+data Font = Font FontName FontSize deriving (Show)
+newtype FontName = FontName String deriving (Show)
+newtype FontSize = FontSize CGFloat deriving (Show)
+newtype LineCount = LineCount { _rawLineCount :: Int } deriving (Show)
 
 defaultFont = Font (FontName "SF") (FontSize 17)
 
@@ -21,3 +21,4 @@ data BreakMode =
  | TruncatingHead
  | TruncatingTail
  | TruncatingMiddle
+ deriving (Show)

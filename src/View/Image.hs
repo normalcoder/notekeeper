@@ -5,6 +5,6 @@ module View.Image
 
 import ObjcTypes
 
-newtype UIImage = UIImage { _rawUiImage :: Id }
+newtype UIImage = UIImage { _rawUiImage :: Id } deriving (Show)
 
-data Aspect = Fit | Fill | Scale | Center
+data Aspect = Fit | Fill | Scale | Center deriving (Show)
