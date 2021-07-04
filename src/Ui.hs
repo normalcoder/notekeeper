@@ -10,6 +10,7 @@ import Camera
 import View.View
 import View.Color
 import View.Layout
+import View.Label
 
 ui1 i = stackH $ do
  stack $ do
@@ -39,6 +40,22 @@ ui = scroll $ stack $ do
 createUi :: Id -> IO ()
 createUi vc = do
  rootView <- "view" @<. vc
+
+{-
+        CGSize maximumLabelSize = CGSizeMake(310, CGFLOAT_MAX);
+        NSString *s = @"weqwegjhgqjq QHJ Ghjqwg ehwqg ehjqg ejqhW GJHQ GEjhqw gejqwh gjqhw fkj🎆😀❤️‍🔥🕴️🚴‍♂️🎆😀❤️‍🔥🕴️🚴‍♂️🎆😀❤️‍🔥🕴️🚴‍♂️🎆😀❤️‍🔥🕴️🚴‍♂️🎆😀❤️‍🔥🕴️🚴‍♂️🎆😀❤️‍🔥🕴️🚴‍♂️🎆😀❤️‍🔥🕴️🚴‍♂️🎆😀❤️‍🔥🕴️🚴‍♂️🎆😀❤️‍🔥🕴️🚴‍♂️🎆😀❤️‍🔥🕴️🚴‍♂️🎆😀❤️‍🔥🕴️🚴‍♂️🎆😀❤️‍🔥🕴️🚴‍♂️🎆😀❤️‍🔥🕴️🚴‍♂️🎆😀❤️‍🔥🕴️🚴‍♂️🎆😀❤️‍🔥🕴️🚴‍♂️wwew";
+        CGRect textRect = [s boundingRectWithSize:maximumLabelSize
+                                                 options:(NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading)
+                                              attributes:@{NSFontAttributeName: [UIFont systemFontOfSize:17]}
+                                                 context:nil];
+-}
+ let text = "🎆😀🕴️🎆😀🕴️🎆😀🕴️🎆😀🕴️🎆😀🕴️🎆😀🕴️🎆😀🕴️🎆😀🕴️🎆😀🕴️🎆😀🕴️🎆😀🕴️🎆😀🕴️🎆😀🕴️🎆😀🕴️🎆😀🕴️🎆😀🕴️🎆😀🕴️🎆😀🕴️🎆😀🕴️🎆😀🕴️🎆😀🕴️🎆😀🕴️🎆😀🕴️🎆😀🕴️🎆😀🕴️🎆😀🕴️🎆😀🕴️🎆😀🕴️🎆😀🕴️🎆😀🕴️🎆😀🕴️🎆😀🕴️🎆😀🕴️🎆😀🕴️🎆😀🕴️🎆😀🕴️🎆😀🕴️🎆😀🕴️🎆😀🕴️🎆😀🕴️🎆😀🕴️🎆😀🕴️Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+ let text2 = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+ print $ "len1: " ++ show (length text)
+ print $ "len2: " ++ show (length text2)
+ s <- textSize text (Font (FontName "") (FontSize 17)) 310
+ print $ "textSize: " ++ show s
+ 
 
 -- camera <- createCameraUi
 -- Superview rootView `addSubviewAndPin` Subview camera

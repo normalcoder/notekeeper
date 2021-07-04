@@ -14,6 +14,7 @@ module ObjcHelpers
 , ptrWord
 , ptrBool
 , nsArray
+, nsDict
 , mkDelegate
 , nullRet
 ) where
@@ -80,6 +81,12 @@ nsArray os = do
  forM_ os $ \o -> do
   ("addObject:", o) <.@. a
  pure a
+
+nsDict kvs = do
+ d <- "new" @| "NSMutableDictionary"
+ forM_ kvs $ \(k,v) -> do
+  ("setValue:forKey:", [v, k]) <.@@. d
+ pure d
 
 mkDelegate className methods = do
  registerSubclass "NSObject" className $ map (\(name, action) -> (InstanceMethod, name, action)) methods

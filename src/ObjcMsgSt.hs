@@ -36,6 +36,7 @@ module ObjcMsgSt
 --, objc_msgSend_stret_Float
 --, objc_msgSend_stret_Float_apply_ptr
 , objc_msgSend_stret_CGFloat2_apply_CGFloat2_apply_ptr
+, objc_msgSend_stret_CGFloat4_apply_CGFloat2_apply_ptr_apply_ptr_apply_ptr
 , objc_msgSend_apply_ptr_apply_block
 ) where
 
@@ -66,6 +67,16 @@ instance Storable a => Storable (a, a) where
  sizeOf _ = 2 * 8 -- (sizeOf (undefined :: a))
  peek p = (,) <$> peekElemOff (castPtr p) 0 <*> peekElemOff (castPtr p) 1
  poke p (a,b) = pokeElemOff (castPtr p) 0 a >> pokeElemOff (castPtr p) 1 b
+
+instance Storable a => Storable (a, a, a, a) where
+ alignment _ = 8
+ sizeOf _ = 4 * 8 -- (sizeOf (undefined :: a))
+ peek p = (,,,) <$> peekElemOff (castPtr p) 0 <*> peekElemOff (castPtr p) 1 <*> peekElemOff (castPtr p) 2 <*> peekElemOff (castPtr p) 3
+ poke p (a,b,c,d) = do
+  pokeElemOff (castPtr p) 0 a
+  pokeElemOff (castPtr p) 1 b
+  pokeElemOff (castPtr p) 2 c
+  pokeElemOff (castPtr p) 3 d
 
 
 data FpValue = FpFloat CGFloat | FpDouble CGFloat deriving (Show) -- FpValue is a wrapper which helps to peek and poke float of double
@@ -251,6 +262,17 @@ objc_msgSend_stret_CGFloat2_apply_CGFloat2_apply_ptr obj selName arg1 arg2 = do
   alloca $ \rBuffer -> do
    poke arg1Buffer arg1
    c_objc_msgSend_stret_CGFloat2_apply_CGFloat2_apply_ptr obj sel rBuffer arg1Buffer arg2
+   peek rBuffer
+
+foreign import ccall safe "objc_msgSend_stret_CGFloat4_apply_CGFloat2_apply_ptr_apply_ptr_apply_ptr" c_objc_msgSend_stret_CGFloat4_apply_CGFloat2_apply_ptr_apply_ptr_apply_ptr :: Id -> Sel -> Ptr CGFloat4 -> Ptr CGFloat2 -> Id -> Id -> Id -> IO ()
+
+objc_msgSend_stret_CGFloat4_apply_CGFloat2_apply_ptr_apply_ptr_apply_ptr :: Id -> SelName -> CGFloat2 -> Id -> Id -> Id -> IO CGFloat4
+objc_msgSend_stret_CGFloat4_apply_CGFloat2_apply_ptr_apply_ptr_apply_ptr obj selName arg1 arg2 arg3 arg4 = do
+ sel <- getSelByName selName
+ alloca $ \arg1Buffer -> do
+  alloca $ \rBuffer -> do
+   poke arg1Buffer arg1
+   c_objc_msgSend_stret_CGFloat4_apply_CGFloat2_apply_ptr_apply_ptr_apply_ptr obj sel rBuffer arg1Buffer arg2 arg3 arg4
    peek rBuffer
 
 foreign import ccall safe "objc_msgSend_apply_ptr_apply_block" c_objc_msgSend_apply_ptr_apply_block :: Id -> Sel -> Id -> FunPtr (Id -> IO ()) -> IO ()

@@ -150,12 +150,19 @@ widthTree layoutSize (ViewSpecImpl kind _ (DesiredSize w _)) = case (kind, w, la
 type Size = (Double, Double)
 type TreeSize = Tree Size
 
+calcTextSize' :: ViewSpecImpl -> Tree (LayoutSize Width) -> IO (Tree (CGFloat, CGFloat))
+calcTextSize' = undefined
+
+calcTextSize :: ViewSpecImpl -> Width -> IO (Width, Height)
 calcTextSize = undefined
+
+
+
 origins = undefined
 
 layoutSubviews ((w,h), q@(View spec@(ViewSpecImpl kind color (DesiredSize desiredWidth desiredHeight)) views@(Node view subviews))) = do
  print $ "!!!layoutSubviews: " ++ show q
- sizes <- calcTextSize spec $ widths (Resolved $ Width w) spec
+ sizes <- calcTextSize' spec $ widths (Resolved $ Width w) spec
  traverse_ setFrame $ zipTree3 views (origins sizes) sizes
  where
  setFrame (view, (x,y), (w,h)) = safeSetFrame (x,y,w,h) view

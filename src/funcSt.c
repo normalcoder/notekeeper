@@ -92,6 +92,8 @@ void objc_msgSend_stret_Double2(void * obj, void * sel, struct Double2 * r, void
 
 void objc_msgSend_stret_CGFloat2_apply_CGFloat2_apply_ptr(void * obj, void * sel, struct CGFloat2 * r, struct CGFloat2 * a1, void * a2) { *r = ((struct CGFloat2 (*)(void *, void *, struct CGFloat2, void *))f)(obj, sel, *a1, a2); }
 
+void objc_msgSend_stret_CGFloat4_apply_CGFloat2_apply_ptr_apply_ptr_apply_ptr(void * obj, void * sel, struct CGFloat4 * r, struct CGFloat2 * a1, void * a2, void * a3, void * a4) { *r = ((struct CGFloat4 (*)(void *, void *, struct CGFloat2, void *, void *, void *))fRet)(obj, sel, *a1, a2, a3, a4); }
+
 void * objc_msgSend_apply_ptr_apply_block(void * obj, void * sel, void * a1, void (*blockFunPtr)(void *)) {
  ((void * (*)(void *, void *, void *, void (^)()))f)(obj, sel, a1, ^(void *blockA1){ (*blockFunPtr)(blockA1); });
 }

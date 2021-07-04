@@ -25,6 +25,7 @@ library
    , Tree
    , UiKit
    , UiKitHelpers
+   , UiKitText
    , Gcd
    , Window
    , Ui
@@ -44,6 +45,7 @@ library
    , random
 --   , aeson
    , vector
+   , numeric-limits
 --   , vector-algorithms
 --   , megaparsec
 --   , network
