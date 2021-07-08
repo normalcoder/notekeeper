@@ -23,7 +23,8 @@ newtype FontName = FontName String deriving (Show)
 newtype FontSize = FontSize CGFloat deriving (Show)
 newtype LineCount = LineCount { _rawLineCount :: Int } deriving (Show)
 
-defaultFont = Font (FontName "SF") (FontSize 17)
+-- SF
+defaultFont = Font (FontName ".SFUI-Regular") (FontSize 17)
 
 data BreakMode =
    WordWrapping
@@ -36,7 +37,10 @@ data BreakMode =
 
 
 textSize text (Font (FontName name) (FontSize fontSize)) width = do
- font <- ("systemFontOfSize:", fontSize) <.+ "class" @| "UIFont"
+ -- font <- ("systemFontOfSize:", fontSize) <.+ "class" @| "UIFont"
+ nsStringName <- getNsString name
+ font <- ("fontWithName:size:", nsStringName, fontSize) <.@+ "class" @| "UIFont"
+
  _cNSFontAttributeName <- peek cNSFontAttributeName
  attributes <- nsDict [(_cNSFontAttributeName, font)]
  let options = wordPtrToPtr $ usesLineFragmentOrigin .|. usesFontLeading

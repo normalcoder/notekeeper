@@ -144,6 +144,9 @@ module ObjcMsgOps
 , (<.+), op_stapply_CGFloat_unIOed_arg_IOed_obj
 , (<.+.), op_stapply_CGFloat_unIOed_arg_unIOed_obj
 
+, (<.@+), op_apply_unIOed_arg_apply_CGFloat_unIOed_arg_IOed_obj
+, (<.@+.), op_apply_unIOed_arg_apply_CGFloat_unIOed_arg_unIOed_obj
+
 ) where
 
 import Foreign.Ptr
@@ -476,6 +479,15 @@ infixr 5 <.+
 op_stapply_CGFloat_unIOed_arg_unIOed_obj (selName, arg) obj = objc_msgSend_stapply_CGFloat obj selName arg
 (<.+.) = op_stapply_CGFloat_unIOed_arg_unIOed_obj
 infixr 5 <.+.
+
+
+op_apply_unIOed_arg_apply_CGFloat_unIOed_arg_IOed_obj (selName, arg1, arg2) objAct = objAct >>= \obj -> op_apply_unIOed_arg_apply_CGFloat_unIOed_arg_unIOed_obj (selName, arg1, arg2) obj
+(<.@+) = op_apply_unIOed_arg_apply_CGFloat_unIOed_arg_IOed_obj
+infixr 5 <.@+
+op_apply_unIOed_arg_apply_CGFloat_unIOed_arg_unIOed_obj (selName, arg1, arg2) obj = objc_msgSend_apply_obj_apply_CGFloat obj selName arg1 arg2
+(<.@+.) = op_apply_unIOed_arg_apply_CGFloat_unIOed_arg_unIOed_obj
+infixr 5 <.@+.
+
 
 --(<./) = op_stapply_Long_unIOed_arg_unIOed_obj
 --(<.=) = op_stapply_Bool_unIOed_arg_unIOed_obj

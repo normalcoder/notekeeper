@@ -61,6 +61,8 @@ void * objc_msgSend_stapply_CGFloat16(void * obj, void * sel, struct CGFloat16 *
 
 void *objc_msgSend_apply_CGFloat_x4(void * obj, void * sel, CGFloat a1, CGFloat a2, CGFloat a3, CGFloat a4) { return ((void * (*)(void *, void *, CGFloat, CGFloat, CGFloat, CGFloat))f)(obj, sel, a1, a2, a3, a4); }
 
+void *objc_msgSend_apply_obj_apply_CGFloat(void * obj, void * sel, void * a1, CGFloat a2) { return ((void * (*)(void *, void *, void *, CGFloat))f)(obj, sel, a1, a2); }
+
 
 void * objc_msgSend_stapply_Float2(void * obj, void * sel, struct Float2 * a1) { return ((void * (*)(void *, void *, struct Float2))f)(obj, sel, *a1); }
 void * objc_msgSend_stapply_Double(void * obj, void * sel, struct Double * a1) {

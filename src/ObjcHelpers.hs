@@ -1,6 +1,7 @@
 module ObjcHelpers
 ( getNsObjectDescription
 , getNsString
+, fromNsString
 , getObjectClass
 , getObjectClassName
 , toNsInteger
@@ -58,6 +59,7 @@ foreign import ccall safe "floatToPtr" floatToPtr :: Float -> Ptr ()
 
 getNsObjectDescription o = "UTF8String" @< "description" @<. o >>= peekCString . castPtr
 getNsString s = withCString s $ \s -> objc_msgSend_class "NSString" "stringWithUTF8String:" [castPtr s]
+fromNsString nsString = "UTF8String" @<. nsString >>= peekCString . castPtr
 getObjectClass o = objc_msgSend o "class" []
 getObjectClassName o = getObjectClass o >>= getNsObjectDescription
 
