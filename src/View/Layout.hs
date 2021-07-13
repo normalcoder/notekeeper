@@ -95,7 +95,7 @@ widths layoutType (ViewSpecImpl kind _ (DesiredSize desiredWidth _)) = case kind
   Vertical -> r
    where
    r
-    | null resolved = undefined
+    | null resolved = error "null resolved"
     | otherwise = Node maxWidth $ map (snd . snd) $ sortOn fst $ resolved ++ recalculatedNotResolved
     
    (resolved, notResolved) = split (\(_,(_,(Node w _))) -> isResolved w) $ zip [0..] $ mapZip (widths width) specImpls
@@ -104,8 +104,8 @@ widths layoutType (ViewSpecImpl kind _ (DesiredSize desiredWidth _)) = case kind
    
    recalculatedNotResolved = map (\(i, (spec, _)) -> (i, (spec, widths maxWidth spec))) notResolved
 
-  Horizontal -> undefined
-  Overlap -> undefined
+  Horizontal -> error "Horizontal unimplemented"
+  Overlap -> error "Overlap unimplemented"
  where
  simple = Node width []
  width = case layoutType of
@@ -155,6 +155,7 @@ calcTextSize' = undefined
 
 calcTextSize :: ViewSpecImpl -> Width -> IO (Width, Height)
 calcTextSize = undefined
+-- textSize text (Font (FontName name) (FontSize fontSize)) width
 
 
 
@@ -162,7 +163,10 @@ origins = undefined
 
 layoutSubviews ((w,h), q@(View spec@(ViewSpecImpl kind color (DesiredSize desiredWidth desiredHeight)) views@(Node view subviews))) = do
  print $ "!!!layoutSubviews: " ++ show q
- sizes <- calcTextSize' spec $ widths (Resolved $ Width w) spec
+ let ws = widths (Resolved $ Width w) spec
+ print $ "!!!width calculated: " ++ show ws
+ sizes <- calcTextSize' spec ws
+ print $ "!!!sizes calculated by calcTextSize': " ++ show sizes
  traverse_ setFrame $ zipTree3 views (origins sizes) sizes
  where
  setFrame (view, (x,y), (w,h)) = safeSetFrame (x,y,w,h) view
