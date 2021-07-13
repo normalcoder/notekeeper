@@ -47,8 +47,8 @@ createUi vc = do
 
  -- v <- _rawUiView . _uiView <$> build ui
  -- Superview rootView `addSubviewAndPin` Subview v
- view <- build ui
- Superview rootView `addSubviewAndPin` view
+ -- view <- build ui
+ -- Superview rootView `addSubviewAndPin` view
  pure ()
 
 
