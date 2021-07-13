@@ -16,14 +16,44 @@ LIB_NAME=app
 BUILT_LIB=$(find ${DIR} | grep ".*inplace-.*a$")
 RAW_LIB=${DIR}/.raw_lib${LIB_NAME}.a
 LIB=${DIR}/lib${LIB_NAME}.a
+IPHONEOS_PLATFORM="iphoneos"
+IPHONESIMULATOR_PLATFORM="iphonesimulator"
+
+
+CURRENT_PLATFORM_FILE=.currentPlatform
+
+markLibForIos() {
+    # forall *.o: LC_BUILD_VERSION: PLATFORM_MACOS(1) -> PLATFORM_IOS(2)
+    perl -pi -e 's/(\62\0\0\0.{4})\01\0\0\0/\1\02\0\0\0/g' ${LIB}
+    
+    echo ${IPHONEOS_PLATFORM} > ${CURRENT_PLATFORM_FILE}
+}
+
+markLibForSimulator() {
+    # forall *.o: LC_BUILD_VERSION: PLATFORM_MACOS(1) -> PLATFORM_IOSSIMULATOR(7)
+    perl -pi -e 's/(\62\0\0\0.{4})\01\0\0\0/\1\07\0\0\0/g' ${LIB}
+
+    # forall *.o: LC_VERSION_MIN_IPHONEOS -> LC_BUILD_VERSION.PLATFORM_IOSSIMULATOR(7)
+    perl -pi -e 's/\45\0\0\0\20\0\0\0(\0\0..)(\0\0..)/\62\0\0\0\20\0\0\0\07\0\0\0\1/g' ${LIB}
+    
+    echo ${IPHONESIMULATOR_PLATFORM} > ${CURRENT_PLATFORM_FILE}
+}
+
+isCurrentPlatformUnchanged() {
+    grep -F ${PLATFORM_NAME} ${CURRENT_PLATFORM_FILE} >> /dev/null
+}
 
 updateLib() {
     cp ${BUILT_LIB} ${RAW_LIB}
-    
+
     cp ${RAW_LIB} ${LIB}
-    
-    # forall *.o: LC_BUILD_VERSION: PLATFORM_MACOS(1) -> PLATFORM_IOS(2)
-    perl -pi -e 's/(\62\0\0\0.{4})\01\0\0\0/\1\02\0\0\0/g' ${LIB}
+
+    if [ ${PLATFORM_NAME} == ${IPHONESIMULATOR_PLATFORM} ]; then
+        markLibForSimulator
+    else
+        markLibForIos
+    fi
 }
 
-diff ${BUILT_LIB} ${RAW_LIB} || updateLib
+
+(isCurrentPlatformUnchanged && test -f ${LIB} && diff ${BUILT_LIB} ${RAW_LIB}) || updateLib
