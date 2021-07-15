@@ -7,6 +7,7 @@ export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
 
 cd ${DIR}
 
+#env -i HOME="$HOME" PATH="$PATH" USER="$USER" cabal build --enable-static --ghc-options='-threaded -O2 +RTS -A64m -AL128m -qn8'
 env -i HOME="$HOME" PATH="$PATH" USER="$USER" cabal build --enable-static --ghc-option=-threaded
 rm -f cabal.project.local~*
 
