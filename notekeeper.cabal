@@ -48,6 +48,7 @@ library
    , vector
    , numeric-limits
    , gitrev
+   , inline-c
 --   , vector-algorithms
 --   , megaparsec
 --   , network
