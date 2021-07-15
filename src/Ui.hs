@@ -3,6 +3,7 @@ module Ui
 ) where
 
 import Control.Monad
+import Control.Concurrent
 
 import Objc
 import UiKit
@@ -12,6 +13,7 @@ import View.Color
 import View.Layout
 import View.Label
 
+import Qwe
 
 ui1 i = stackH $ do
  stack $ do
@@ -38,9 +40,19 @@ ui = scroll $ stack $ do
 -- ui
 
 
+q = do
+ print "q"
+ threadDelay $ 10^6
+ q
+
 createUi :: Id -> IO ()
 createUi vc = do
+ forkIO q
+ 
+ checkth
+ 
  rootView <- "view" @<. vc
+ 
 
 -- camera <- createCameraUi
 -- Superview rootView `addSubviewAndPin` Subview camera

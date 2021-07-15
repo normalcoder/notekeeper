@@ -7,8 +7,7 @@ export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
 
 cd ${DIR}
 
-cabal configure --disable-shared --enable-static --ghc-option=-threaded
-cabal build --disable-shared --enable-static --ghc-option=-threaded
+env -i HOME="$HOME" PATH="$PATH" USER="$USER" cabal build --enable-static --ghc-option=-threaded
 rm -f cabal.project.local~*
 
 LIB_NAME=app
@@ -25,7 +24,7 @@ CURRENT_PLATFORM_FILE=.currentPlatform
 markLibForIos() {
     # forall *.o: LC_BUILD_VERSION: PLATFORM_MACOS(1) -> PLATFORM_IOS(2)
     perl -pi -e 's/(\62\0\0\0.{4})\01\0\0\0/\1\02\0\0\0/g' ${LIB}
-    
+
     echo ${IPHONEOS_PLATFORM} > ${CURRENT_PLATFORM_FILE}
 }
 
@@ -35,7 +34,7 @@ markLibForSimulator() {
 
     # forall *.o: LC_VERSION_MIN_IPHONEOS -> LC_BUILD_VERSION.PLATFORM_IOSSIMULATOR(7)
     perl -pi -e 's/\45\0\0\0\20\0\0\0(\0\0..)(\0\0..)/\62\0\0\0\20\0\0\0\07\0\0\0\1/g' ${LIB}
-    
+
     echo ${IPHONESIMULATOR_PLATFORM} > ${CURRENT_PLATFORM_FILE}
 }
 

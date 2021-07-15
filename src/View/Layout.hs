@@ -162,6 +162,7 @@ calcTextSize = undefined
 origins = undefined
 
 layoutSubviews ((w,h), q@(View spec@(ViewSpecImpl kind color (DesiredSize desiredWidth desiredHeight)) views@(Node view subviews))) = do
+{-
  print $ "!!!layoutSubviews: " ++ show q
  let ws = widths (Resolved $ Width w) spec
  print $ "!!!width calculated: " ++ show ws
@@ -170,8 +171,8 @@ layoutSubviews ((w,h), q@(View spec@(ViewSpecImpl kind color (DesiredSize desire
  traverse_ setFrame $ zipTree3 views (origins sizes) sizes
  where
  setFrame (view, (x,y), (w,h)) = safeSetFrame (x,y,w,h) view
+-}
 
-{-
  case kind of
   Container _ d specImpls -> do
 --   map _desiredSize specImpls
@@ -204,4 +205,3 @@ layoutSubviews ((w,h), q@(View spec@(ViewSpecImpl kind color (DesiredSize desire
    pure ()
  where
  n = length subviews
--}

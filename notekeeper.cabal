@@ -35,6 +35,7 @@ library
    , View.Label
    , View.Layout
    , View.View
+   , Qwe
   c-sources:
      src/funcSt.c
    , src/objc_msgSendN.c
@@ -46,6 +47,7 @@ library
 --   , aeson
    , vector
    , numeric-limits
+   , gitrev
 --   , vector-algorithms
 --   , megaparsec
 --   , network
