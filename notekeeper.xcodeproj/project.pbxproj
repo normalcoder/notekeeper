@@ -23,7 +23,6 @@
 		E68F4AFC21EB4F8900ECEABD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E68F4AFE21EB4F8900ECEABD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E68F4AFF21EB4F8900ECEABD /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		E68F4B0A21EB508F00ECEABD /* libapp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libapp.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -44,7 +43,6 @@
 				E68F4AFB21EB4F8900ECEABD /* LaunchScreen.storyboard */,
 				E68F4AFE21EB4F8900ECEABD /* Info.plist */,
 				E68F4AFF21EB4F8900ECEABD /* main.m */,
-				E68F4B0A21EB508F00ECEABD /* libapp.a */,
 				E68F4B0621EB4FE900ECEABD /* Frameworks */,
 				E68F4AEE21EB4F8900ECEABD /* Products */,
 				E60862162468933100486ECB /* build.sh */,
@@ -152,7 +150,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#bash build.sh\n";
+			shellScript = "zsh build.sh\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -300,7 +298,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = P3J5TJGY65;
+				DEVELOPMENT_TEAM = QSCH2J9H2Y;
 				INFOPLIST_FILE = Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -312,23 +310,10 @@
 					"$(PROJECT_DIR)/Frameworks",
 				);
 				OTHER_LDFLAGS = (
-					"-liconv",
-					"-lHSnmrc-lmts-0.1.0.0-69e35314-ghc9.2.1",
-					"-lHSdpsq-1.4.6.1-f462a97d-ghc9.2.1",
-					"-lHSrndm-1.2.1-769950eb-ghc9.2.1",
-					"-lHSbytstrng-0.11.1.0-eb0122c0-ghc9.2.1",
-					"-lHSspltmx-0.1.0.4-44a2e96f-ghc9.2.1",
-					"-lHScntnrs-0.6.5.1-c2d95a8b-ghc9.2.1",
-					"-lHSnotekeeper-0.1.0.0-inplace-ghc9.2.1",
-					"-lHSarray-0.5.4.0-ghc9.2.1",
-					"-lHSmtl-2.2.2-ghc9.2.1",
-					"-lHStransformers-0.5.6.2-ghc9.2.1",
-					"-lHSrts-1.0.2_thr_debug-ghc9.2.1",
-					"-lHSghc-prim-0.8.0-ghc9.2.1",
-					"-lHSghc-bignum-1.2-ghc9.2.1",
-					"-lHSbase-4.16.0.0-ghc9.2.1",
+					"-filelist",
+					"\"${SRCROOT}/.filesToLink\"",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.camnote;
+				PRODUCT_BUNDLE_IDENTIFIER = com.camnote.asdfdfgdf1312;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -339,7 +324,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = P3J5TJGY65;
+				DEVELOPMENT_TEAM = QSCH2J9H2Y;
 				INFOPLIST_FILE = Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -352,23 +337,10 @@
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
-					"-liconv",
-					"-lHSnmrc-lmts-0.1.0.0-69e35314-ghc9.2.1",
-					"-lHSdpsq-1.4.6.1-f462a97d-ghc9.2.1",
-					"-lHSrndm-1.2.1-769950eb-ghc9.2.1",
-					"-lHSbytstrng-0.11.1.0-eb0122c0-ghc9.2.1",
-					"-lHSspltmx-0.1.0.4-44a2e96f-ghc9.2.1",
-					"-lHScntnrs-0.6.5.1-c2d95a8b-ghc9.2.1",
-					"-lHSnotekeeper-0.1.0.0-inplace-ghc9.2.1",
-					"-lHSarray-0.5.4.0-ghc9.2.1",
-					"-lHSmtl-2.2.2-ghc9.2.1",
-					"-lHStransformers-0.5.6.2-ghc9.2.1",
-					"-lHSrts-1.0.2_thr_debug-ghc9.2.1",
-					"-lHSghc-prim-0.8.0-ghc9.2.1",
-					"-lHSghc-bignum-1.2-ghc9.2.1",
-					"-lHSbase-4.16.0.0-ghc9.2.1",
+					"-filelist",
+					"\"${SRCROOT}/.filesToLink\"",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.camnote;
+				PRODUCT_BUNDLE_IDENTIFIER = com.camnote.asdfdfgdf1312;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

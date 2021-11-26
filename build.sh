@@ -25,7 +25,7 @@ perl -i -pe "BEGIN{undef $/;} s/(exposed-modules:)(.*?)(  [a-z])/\1\n${MODULES}\
 #/Library/Developer/CommandLineTools/SDKs/MacOSX12.0.sdk/usr/include/ffi
 
 
-env -i HOME="$HOME" PATH="$PATH" USER="$USER" cabal build --ghc-options="-threaded -optc -Wno-nullability-completeness -optc -Wno-expansion-to-defined -optc -Wno-availability -optc -Wno-int-conversion -optc -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/ffi -optc -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/include -optl -L/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/lib"
+env -i HOME="$HOME" PATH="$PATH" USER="$USER" cabal build --ghc-options="-fllvm -threaded -optc -Wno-nullability-completeness -optc -Wno-expansion-to-defined -optc -Wno-availability -optc -Wno-int-conversion -optc -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/ffi -optc -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/include -optl -L/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/lib"
 
 
 #env -i HOME="$HOME" PATH="$PATH" USER="$USER" cabal build --ghc-options="-fllvm -optc -Wno-nullability-completeness -optc -Wno-expansion-to-defined -optc -Wno-availability -optc -I/Library/Developer/CommandLineTools/SDKs/MacOSX12.0.sdk/usr/include/ffi -optc -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/include -optl -L/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/lib"
@@ -38,10 +38,14 @@ env -i HOME="$HOME" PATH="$PATH" USER="$USER" cabal build --ghc-options="-thread
 LIB_DIR=${DIR}/Frameworks
 
 #BUILT_LIB=$(find ${DIR} | grep ".*inplace-.*a$")
-BUILT_LIB=$(find ${DIR} | grep ".*inplace-.*dylib$" | head -n 1)
+BUILT_LIB=$(find ${DIR}/dist-newstyle | grep ".*inplace-.*dylib$" | head -n 1)
 
 LIB_FILE_NAME=$(basename ${BUILT_LIB})
+
+echo "!!!LIB_FILE_NAME: ${LIB_FILE_NAME}"
+
 LIB=${LIB_DIR}/${LIB_FILE_NAME}
+echo "!!!LIB_FILE_NAME: ${LIB_FILE_NAME}"
 
 RAW_LIB=${DIR}/.raw_${LIB_FILE_NAME}
 
@@ -58,20 +62,18 @@ reduceMinOsVer() {
     perl -pi -e 's/(\62\0\0\0.{4}\02\0\0\0\0\0)\14/\1\13/g' ${LIB_DIR}/*
 }
 
-markLibForIos() {
+markLibsForIos() {
     # forall *.o: LC_BUILD_VERSION: PLATFORM_MACOS(1) -> PLATFORM_IOS(2)
     perl -pi -e 's/(\62\0\0\0.{4})\01\0\0\0/\1\02\0\0\0/g' ${LIB_DIR}/*
-    
-    reduceMinOsVer
+    perl -pi -e 's/(\62\0\0\0.{4})\07\0\0\0/\1\02\0\0\0/g' ${LIB_DIR}/*
 
     echo ${IPHONEOS_PLATFORM} > ${CURRENT_PLATFORM_FILE}
 }
 
-markLibForSimulator() {
+markLibsForSimulator() {
     # forall *.o: LC_BUILD_VERSION: PLATFORM_MACOS(1) -> PLATFORM_IOSSIMULATOR(7)
     perl -pi -e 's/(\62\0\0\0.{4})\01\0\0\0/\1\07\0\0\0/g' ${LIB_DIR}/*
-    
-    reduceMinOsVer
+    perl -pi -e 's/(\62\0\0\0.{4})\02\0\0\0/\1\07\0\0\0/g' ${LIB_DIR}/*
 
 #    # forall *.o: LC_VERSION_MIN_IPHONEOS -> LC_BUILD_VERSION.PLATFORM_IOSSIMULATOR(7)
 #    perl -pi -e 's/\45\0\0\0\20\0\0\0(\0\0..)(\0\0..)/\62\0\0\0\20\0\0\0\07\0\0\0\1/g' ${LIB_DIR}
@@ -79,9 +81,13 @@ markLibForSimulator() {
     echo ${IPHONESIMULATOR_PLATFORM} > ${CURRENT_PLATFORM_FILE}
 }
 
+signLibs() {
+    codesign -f -s 9BC6CBB53C42376BD19529C10FF83CDB0BDB38BB ${LIB_DIR}/*
+}
+
 isCurrentPlatformUnchanged() {
-#    grep -F ${PLATFORM_NAME} ${CURRENT_PLATFORM_FILE} > /dev/null
-    exit 1
+    grep -F ${PLATFORM_NAME} ${CURRENT_PLATFORM_FILE} > /dev/null
+#    exit 0
 }
 
 #echo "!!!$CABAL_LIBS"
@@ -138,35 +144,63 @@ collectDeps() {
 }
 
 addRts() {
-    RTS_LIB_FILE=$(echo ${GHC_LIBS} | grep "rts.*thr_debug" | head -n 1)
-    RTS_LIB_FILE_NAME=$(basename RTS_LIB_FILE)
+#libHSrts-1.0.2-ghc9.2.1.dylib
+#libffi.dylib
+#libHSrts-ghc
+#    RTS_LIB_FILE=$(echo ${GHC_LIBS} | grep "rts.*thr_debug" | head -n 1)
+#    RTS_LIB_FILE=$(echo ${GHC_LIBS} | grep "libHSrts-ghc8.10.7" | head -n 1)
+#    RTS_LIB_FILE=$(echo ${GHC_LIBS} | grep "libHSrts_thr_l-ghc8.10.7" | head -n 1)
+#    RTS_LIB_FILE=$(echo ${GHC_LIBS} | grep "libHSrts_thr_debug-ghc8.10.7" | head -n 1)
+    RTS_LIB_FILE=$(echo ${GHC_LIBS} | grep "libHSrts-1.0.2_thr_debug-ghc9.2.1.dylib" | head -n 1)
+
+
+
+    RTS_LIB_FILE_NAME=$(basename ${RTS_LIB_FILE})
     allDeps[${RTS_LIB_FILE_NAME}]=${RTS_LIB_FILE}
 }
+
+#addFfi() {
+#    FFI_LIB_FILE=$(echo ${GHC_LIBS} | grep "libffi.dylib" | head -n 1)
+#    FFI_LIB_FILE_NAME=$(basename ${FFI_LIB_FILE})
+#    allDeps[${FFI_LIB_FILE_NAME}]=${FFI_LIB_FILE}
+#}
 
 updateLibs() {
     CABAL_DIR=${HOME}/.cabal
     GHCUP_DIR=${HOME}/.ghcup
 
-    CABAL_LIBS=$(find ${CABAL_DIR} | grep 'libHS.*.dylib')
-    GHC_LIBS=$(find ${GHCUP_DIR} | grep 'libHS.*.dylib')
+    CABAL_LIBS=$(find ${CABAL_DIR} | grep 'lib.*.dylib')
+    GHC_LIBS=$(find ${GHCUP_DIR} | grep 'lib.*.dylib')
     HASKELL_LIBS="${CABAL_LIBS}\n${GHC_LIBS}"
 
+
     addRts
+#    addFfi
+    echo "LIB_FILE_NAME: ${LIB_FILE_NAME}"
+    echo "BUILT_LIB: ${BUILT_LIB}"
     collectDeps ${LIB_FILE_NAME} ${BUILT_LIB}
     
+    echo "!!!!allDeps: ${allDeps}"
+    
     mkdir -p ${LIB_DIR}
+
+    (rm ${LIB_DIR}/* || true) 2> /dev/null
     cp ${allDeps} ${LIB_DIR}
     
     cp ${BUILT_LIB} ${RAW_LIB}
 
     if [ ${PLATFORM_NAME} = ${IPHONESIMULATOR_PLATFORM} ]; then
-        markLibForSimulator
+        markLibsForSimulator
     else
-        markLibForIos
-        codesign -f -s B552EDEF2C84A620A46E429989D9706683B87328 ${LIB_DIR}/*
+        markLibsForIos
     fi
+    
+    reduceMinOsVer
+
+    signLibs
+    
+    find ${LIB_DIR} | grep dylib$ > .filesToLink
 }
 
-#updateLibs
-
-(isCurrentPlatformUnchanged && test -f ${LIB} && diff ${BUILT_LIB} ${RAW_LIB}) || updateLibs
+updateLibs
+#(isCurrentPlatformUnchanged && test -f ${LIB} && diff ${BUILT_LIB} ${RAW_LIB}) || updateLibs

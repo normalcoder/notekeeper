@@ -2,6 +2,9 @@
 dist-newstyle
 *~
 *.a
+*.dylib
+.filesToLink
+
 cabal.project.local
 *.xcconfig
 xcuserdata
