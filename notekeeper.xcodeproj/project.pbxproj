@@ -7,23 +7,22 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E6136D21275112A20097D298 /* Frameworks in Resources */ = {isa = PBXBuildFile; fileRef = E6136D20275112A20097D298 /* Frameworks */; };
 		E68F4AFA21EB4F8900ECEABD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E68F4AF921EB4F8900ECEABD /* Assets.xcassets */; };
 		E68F4AFD21EB4F8900ECEABD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E68F4AFB21EB4F8900ECEABD /* LaunchScreen.storyboard */; };
 		E68F4B0021EB4F8900ECEABD /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E68F4AFF21EB4F8900ECEABD /* main.m */; };
-		E68F4B0821EB4FE900ECEABD /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = E68F4B0721EB4FE900ECEABD /* libiconv.tbd */; };
-		E68F4B0B21EB508F00ECEABD /* libapp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E68F4B0A21EB508F00ECEABD /* libapp.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		3F81968A252A6B3000758A04 /* notekeeper.cabal */ = {isa = PBXFileReference; lastKnownFileType = text; path = notekeeper.cabal; sourceTree = "<group>"; };
 		E60862152468924000486ECB /* src */ = {isa = PBXFileReference; lastKnownFileType = folder; path = src; sourceTree = "<group>"; };
 		E60862162468933100486ECB /* build.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = build.sh; sourceTree = "<group>"; };
+		E6136D20275112A20097D298 /* Frameworks */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Frameworks; sourceTree = "<group>"; };
 		E68F4AED21EB4F8900ECEABD /* notekeeper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = notekeeper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E68F4AF921EB4F8900ECEABD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E68F4AFC21EB4F8900ECEABD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E68F4AFE21EB4F8900ECEABD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E68F4AFF21EB4F8900ECEABD /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		E68F4B0721EB4FE900ECEABD /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
 		E68F4B0A21EB508F00ECEABD /* libapp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libapp.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -32,8 +31,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E68F4B0821EB4FE900ECEABD /* libiconv.tbd in Frameworks */,
-				E68F4B0B21EB508F00ECEABD /* libapp.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -43,6 +40,7 @@
 		E68F4AE421EB4F8900ECEABD = {
 			isa = PBXGroup;
 			children = (
+				E6136D20275112A20097D298 /* Frameworks */,
 				E68F4AF921EB4F8900ECEABD /* Assets.xcassets */,
 				E68F4AFB21EB4F8900ECEABD /* LaunchScreen.storyboard */,
 				E68F4AFE21EB4F8900ECEABD /* Info.plist */,
@@ -67,7 +65,6 @@
 		E68F4B0621EB4FE900ECEABD /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				E68F4B0721EB4FE900ECEABD /* libiconv.tbd */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -130,6 +127,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E6136D21275112A20097D298 /* Frameworks in Resources */,
 				E68F4AFD21EB4F8900ECEABD /* LaunchScreen.storyboard in Resources */,
 				E68F4AFA21EB4F8900ECEABD /* Assets.xcassets in Resources */,
 			);
@@ -154,7 +152,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "bash build.sh\n";
+			shellScript = "#bash build.sh\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -309,6 +307,24 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/Frameworks",
+				);
+				OTHER_LDFLAGS = (
+					"-liconv",
+					"-lHSnmrc-lmts-0.1.0.0-69e35314-ghc9.2.1",
+					"-lHSdpsq-1.4.6.1-f462a97d-ghc9.2.1",
+					"-lHSrndm-1.2.1-769950eb-ghc9.2.1",
+					"-lHSbytstrng-0.11.1.0-eb0122c0-ghc9.2.1",
+					"-lHSspltmx-0.1.0.4-44a2e96f-ghc9.2.1",
+					"-lHScntnrs-0.6.5.1-c2d95a8b-ghc9.2.1",
+					"-lHSnotekeeper-0.1.0.0-inplace-ghc9.2.1",
+					"-lHSarray-0.5.4.0-ghc9.2.1",
+					"-lHSmtl-2.2.2-ghc9.2.1",
+					"-lHStransformers-0.5.6.2-ghc9.2.1",
+					"-lHSrts-1.0.2_thr_debug-ghc9.2.1",
+					"-lHSghc-prim-0.8.0-ghc9.2.1",
+					"-lHSghc-bignum-1.2-ghc9.2.1",
+					"-lHSbase-4.16.0.0-ghc9.2.1",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.camnote;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -330,8 +346,26 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/Frameworks",
 				);
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = (
+					"-liconv",
+					"-lHSnmrc-lmts-0.1.0.0-69e35314-ghc9.2.1",
+					"-lHSdpsq-1.4.6.1-f462a97d-ghc9.2.1",
+					"-lHSrndm-1.2.1-769950eb-ghc9.2.1",
+					"-lHSbytstrng-0.11.1.0-eb0122c0-ghc9.2.1",
+					"-lHSspltmx-0.1.0.4-44a2e96f-ghc9.2.1",
+					"-lHScntnrs-0.6.5.1-c2d95a8b-ghc9.2.1",
+					"-lHSnotekeeper-0.1.0.0-inplace-ghc9.2.1",
+					"-lHSarray-0.5.4.0-ghc9.2.1",
+					"-lHSmtl-2.2.2-ghc9.2.1",
+					"-lHStransformers-0.5.6.2-ghc9.2.1",
+					"-lHSrts-1.0.2_thr_debug-ghc9.2.1",
+					"-lHSghc-prim-0.8.0-ghc9.2.1",
+					"-lHSghc-bignum-1.2-ghc9.2.1",
+					"-lHSbase-4.16.0.0-ghc9.2.1",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.camnote;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
