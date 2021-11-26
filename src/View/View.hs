@@ -156,14 +156,15 @@ instance Applicative ViewSpec where
   f <- mf
   x <- mx
   pure $ f x
-
-instance Monad ViewSpec where
- x >>= f = x >> f undefined
- x >> y = case (x,y) of
+ x *> y = case (x,y) of
   (Tmp size1 xs, Tmp size2 ys) -> Tmp (size1 <> size2) $ xs ++ ys
 --  (Tmp xs, ViewSpec y) -> Tmp $ xs ++ [y]
 --  (ViewSpec x, Tmp ys) -> Tmp $ [x] ++ ys
 --  (ViewSpec x, ViewSpec y) -> Tmp [x, y]
+
+instance Monad ViewSpec where
+ x >>= f = x >> f undefined
+ (>>) = (*>)
 
 
 -- newtype Tags = Tags { _tags :: [Tag] }
