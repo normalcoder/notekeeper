@@ -40,7 +40,6 @@
 		E68F4AE421EB4F8900ECEABD = {
 			isa = PBXGroup;
 			children = (
-				E6136D20275112A20097D298 /* Frameworks */,
 				E68F4AF921EB4F8900ECEABD /* Assets.xcassets */,
 				E68F4AFB21EB4F8900ECEABD /* LaunchScreen.storyboard */,
 				E68F4AFE21EB4F8900ECEABD /* Info.plist */,
@@ -51,6 +50,7 @@
 				E60862162468933100486ECB /* build.sh */,
 				3F81968A252A6B3000758A04 /* notekeeper.cabal */,
 				E60862152468924000486ECB /* src */,
+				E6136D20275112A20097D298 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
