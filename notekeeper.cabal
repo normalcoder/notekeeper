@@ -47,6 +47,7 @@ library
     random,
     -- vector,
     numeric-limits,
+    time,
    
 --   aeson
 --   vector-algorithms
