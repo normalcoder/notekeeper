@@ -29,9 +29,8 @@ perl -i -pe "BEGIN{undef $/;} s/(exposed-modules:)(.*?)(  [a-z])/\1\n${MODULES}\
 
 #env -i HOME="$HOME" PATH="$PATH" USER="$USER" cabal update
 #env -i HOME="$HOME" PATH="$PATH" USER="$USER" cabal build --enable-static --ghc-options="-fllvm -threaded -O2 +RTS -A64m -AL128m -qn8 -RTS -optc -Wno-nullability-completeness -optc -Wno-expansion-to-defined -optc -Wno-availability -optc -Wno-int-conversion -optc -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/ffi -optc -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/include -optl -L/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/lib"
-env -i HOME="$HOME" PATH="$PATH" USER="$USER" cabal build --enable-static --ghc-options="-threaded -O2 +RTS -A64m -AL128m -qn8 -RTS -optc -Wno-nullability-completeness -optc -Wno-expansion-to-defined -optc -Wno-availability -optc -Wno-int-conversion -optc -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/ffi -optc -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/include -optl -L/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/lib"
-
-exit 0;
+env -i HOME="$HOME" PATH="$PATH" USER="$USER" cabal build --enable-static --ghc-options="-threaded -O2 +RTS -A64m -AL128m -qn8 -RTS -optc -Wno-nullability-completeness -optc -Wno-expansion-to-defined -optc -Wno-availability -optc -Wno-int-conversion"
+#env -i HOME="$HOME" PATH="$PATH" USER="$USER" cabal build --ghc-options="-threaded -O2 +RTS -A64m -AL128m -qn8 -RTS -optc -Wno-nullability-completeness -optc -Wno-expansion-to-defined -optc -Wno-availability -optc -Wno-int-conversion -optc -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/ffi -optc -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/include -optl -L/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/lib"
 
 #env -i HOME="$HOME" PATH="$PATH" USER="$USER" cabal build --ghc-options="-fllvm -optc -Wno-nullability-completeness -optc -Wno-expansion-to-defined -optc -Wno-availability -optc -I/Library/Developer/CommandLineTools/SDKs/MacOSX12.0.sdk/usr/include/ffi -optc -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/include -optl -L/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/lib"
 
@@ -40,19 +39,20 @@ exit 0;
 (rm -f cabal.project.local~* || true) 2> /dev/null
 
 
-#LIB_DIR=${DIR}/Frameworks
+LIB_DIR=${DIR}/Frameworks
 #LIB_DIR=${DIR}
 
 #BUILT_LIB=$(find ${DIR} | grep ".*inplace-.*a$")
-#BUILT_LIB=$(find ${DIR}/dist-newstyle | grep ".*inplace-.*dylib$" | head -n 1)
-BUILT_LIB=$(find ${DIR}/dist-newstyle | grep ".*inplace-.*a$" | head -n 1)
+BUILT_LIB=$(find ${DIR}/dist-newstyle | grep ".*inplace-.*dylib$" | head -n 1)
+#BUILT_LIB=$(find ${DIR}/dist-newstyle | grep ".*inplace-.*a$" | head -n 1)
+
+#echo "!!!BUILT_LIB: ${BUILT_LIB}"
 
 LIB_FILE_NAME=$(basename ${BUILT_LIB})
 
-echo "!!!LIB_FILE_NAME: ${LIB_FILE_NAME}"
+#echo "!!!LIB_FILE_NAME: ${LIB_FILE_NAME}"
 
 LIB=${LIB_FILE_NAME}
-echo "!!!LIB_FILE_NAME: ${LIB_FILE_NAME}"
 
 RAW_LIB=${DIR}/.raw_${LIB_FILE_NAME}
 
@@ -85,13 +85,20 @@ markLibsForIos() {
 #    perl -pi -e 's/\x32\0\0\0\x18\0\0\0\x01\0\0\0\0\0\x0c\0\0\0\0\0/\x32\0\0\0\x18\0\0\0\x02\0\0\0\0\0\x0c\0\0\0\0\0/g' $@
 #    perl -pi -e 's/\x32\0\0\0\x18\0\0\0\x01\0\0\0\0\0\x0b\0\0\0\0\0/\x32\0\0\0\x18\0\0\0\x02\0\0\0\0\0\x0b\0\0\0\0\0/g' $@
 
-    perl -pi -e 's/\x32\0\0\0\x20\0\0\0\x01\0\0\0\0\0\x0c\0\0\0\0\0/\x32\0\0\0\x20\0\0\0\x02\0\0\0\0\0\x0c\0\0\0\0\0/g' libHSnotekeeper-0.1.0.0-inplace-ghc9.2.1.a
-    perl -pi -e 's/\x32\0\0\0\x20\0\0\0\x01\0\0\0\0\0\x0b\0\0\0\0\0/\x32\0\0\0\x20\0\0\0\x02\0\0\0\0\0\x0b\0\0\0\0\0/g' libHSnotekeeper-0.1.0.0-inplace-ghc9.2.1.a
-    perl -pi -e 's/\x32\0\0\0\x18\0\0\0\x01\0\0\0\0\0\x0c\0\0\0\0\0/\x32\0\0\0\x18\0\0\0\x02\0\0\0\0\0\x0c\0\0\0\0\0/g' libHSnotekeeper-0.1.0.0-inplace-ghc9.2.1.a
-    perl -pi -e 's/\x32\0\0\0\x18\0\0\0\x01\0\0\0\0\0\x0b\0\0\0\0\0/\x32\0\0\0\x18\0\0\0\x02\0\0\0\0\0\x0b\0\0\0\0\0/g' libHSnotekeeper-0.1.0.0-inplace-ghc9.2.1.a
-    perl -pi -e 's/\x32\0\0\0\x18\0\0\0\x01\0\0\0\0\0\x0c\0\0\x01\x0c\0/\x32\0\0\0\x18\0\0\0\x02\0\0\0\0\0\x0c\0\0\x01\x0c\0/g' libHSnotekeeper-0.1.0.0-inplace-ghc9.2.1.a
+    perl -pi -e 's/\x32\0\0\0\x20\0\0\0\x01\0\0\0\0\0\x0c\0\0\0\0\0/\x32\0\0\0\x20\0\0\0\x02\0\0\0\0\0\x0c\0\0\0\0\0/g' ${LIB}
+    perl -pi -e 's/\x32\0\0\0\x20\0\0\0\x01\0\0\0\0\0\x0b\0\0\0\0\0/\x32\0\0\0\x20\0\0\0\x02\0\0\0\0\0\x0b\0\0\0\0\0/g' ${LIB}
+    perl -pi -e 's/\x32\0\0\0\x18\0\0\0\x01\0\0\0\0\0\x0c\0\0\0\0\0/\x32\0\0\0\x18\0\0\0\x02\0\0\0\0\0\x0c\0\0\0\0\0/g' ${LIB}
+    perl -pi -e 's/\x32\0\0\0\x18\0\0\0\x01\0\0\0\0\0\x0b\0\0\0\0\0/\x32\0\0\0\x18\0\0\0\x02\0\0\0\0\0\x0b\0\0\0\0\0/g' ${LIB}
+    perl -pi -e 's/\x32\0\0\0\x18\0\0\0\x01\0\0\0\0\0\x0c\0\0\x01\x0c\0/\x32\0\0\0\x18\0\0\0\x02\0\0\0\0\0\x0c\0\0\x01\x0c\0/g' ${LIB}
     
-    perl -pi -e 's/\x32\0\0\0\x18\0\0\0\x01\0\0\0\0\0\x0b\0\0\x03\x0b\0/\x32\0\0\0\x18\0\0\0\x02\0\0\0\0\0\x0b\0\0\x03\x0b\0/g' libHSnotekeeper-0.1.0.0-inplace-ghc9.2.1.a
+    perl -pi -e 's/\x32\0\0\0\x18\0\0\0\x01\0\0\0\0\0\x0b\0\0\x03\x0b\0/\x32\0\0\0\x18\0\0\0\x02\0\0\0\0\0\x0b\0\0\x03\x0b\0/g' ${LIB}
+
+
+#    perl -pi -e 's/\x32\0\0\0\x20\0\0\0\x02\0\0\0\0\0\x0c\0\0\0\0\0/\x32\0\0\0\x20\0\0\0\x02\0\0\0\0\0\x0b\0\0\0\0\0/g' libHSnotekeeper-0.1.0.0-inplace-ghc9.2.1.a
+#    perl -pi -e 's/\x32\0\0\0\x18\0\0\0\x02\0\0\0\0\0\x0c\0\0\0\0\0/\x32\0\0\0\x18\0\0\0\x02\0\0\0\0\0\x0b\0\0\0\0\0/g' libHSnotekeeper-0.1.0.0-inplace-ghc9.2.1.a
+#    perl -pi -e 's/\x32\0\0\0\x18\0\0\0\x02\0\0\0\0\0\x0c\0\0\x01\x0c\0/\x32\0\0\0\x18\0\0\0\x02\0\0\0\0\0\x0b\0\0\x01\x0c\0/g' libHSnotekeeper-0.1.0.0-inplace-ghc9.2.1.a
+
+
 
     echo ${IPHONEOS_PLATFORM} > ${CURRENT_PLATFORM_FILE}
 }
@@ -173,45 +180,47 @@ addRts() {
 #libHSrts-1.0.2-ghc9.2.1.dylib
 #libffi.dylib
 #libHSrts-ghc
-#    RTS_LIB_FILE=$(echo ${GHC_LIBS} | grep "rts.*thr_debug" | head -n 1)
+    RTS_LIB_FILE=$(echo ${GHC_LIBS} | grep "rts.*thr_debug" | head -n 1)
 #    RTS_LIB_FILE=$(echo ${GHC_LIBS} | grep "libHSrts-ghc8.10.7" | head -n 1)
 #    RTS_LIB_FILE=$(echo ${GHC_LIBS} | grep "libHSrts_thr_l-ghc8.10.7" | head -n 1)
 #    RTS_LIB_FILE=$(echo ${GHC_LIBS} | grep "libHSrts_thr_debug-ghc8.10.7" | head -n 1)
-    RTS_LIB_FILE=$(echo ${GHC_LIBS} | grep "libHSrts-1.0.2_thr_debug-ghc9.2.1.dylib" | head -n 1)
+#    RTS_LIB_FILE=$(echo ${GHC_LIBS} | grep "libHSrts-1.0.2_thr_debug-ghc9.2.1.dylib" | head -n 1)
 
+    echo "@@RTS_LIB_FILE: ${RTS_LIB_FILE}"
 
 
     RTS_LIB_FILE_NAME=$(basename ${RTS_LIB_FILE})
     allDeps[${RTS_LIB_FILE_NAME}]=${RTS_LIB_FILE}
 }
 
-#addFfi() {
-#    FFI_LIB_FILE=$(echo ${GHC_LIBS} | grep "libffi.dylib" | head -n 1)
-#    FFI_LIB_FILE_NAME=$(basename ${FFI_LIB_FILE})
-#    allDeps[${FFI_LIB_FILE_NAME}]=${FFI_LIB_FILE}
-#}
+addFfi() {
+    FFI_LIB_FILE=$(echo ${GHC_LIBS} | grep "libffi.dylib" | head -n 1)
+    FFI_LIB_FILE_NAME=$(basename ${FFI_LIB_FILE})
+    allDeps[${FFI_LIB_FILE_NAME}]=${FFI_LIB_FILE}
+}
 
 updateLibs() {
-#    CABAL_DIR=${HOME}/.cabal
-#    GHCUP_DIR=${HOME}/.ghcup
-#
-#    CABAL_LIBS=$(find ${CABAL_DIR} | grep 'lib.*.dylib')
-#    GHC_LIBS=$(find ${GHCUP_DIR} | grep 'lib.*.dylib')
-#    HASKELL_LIBS="${CABAL_LIBS}\n${GHC_LIBS}"
+    CABAL_DIR=${HOME}/.cabal
+    GHCUP_DIR=${HOME}/.ghcup
 
+    CABAL_LIBS=$(find ${CABAL_DIR} | grep 'lib.*.dylib')
+    GHC_LIBS=$(find ${GHCUP_DIR} | grep 'lib.*.dylib')
+    HASKELL_LIBS="${CABAL_LIBS}\n${GHC_LIBS}"
 
-#    addRts
-#    addFfi
-#    echo "LIB_FILE_NAME: ${LIB_FILE_NAME}"
-#    echo "BUILT_LIB: ${BUILT_LIB}"
-#    collectDeps ${LIB_FILE_NAME} ${BUILT_LIB}
-#
-#    echo "!!!!allDeps: ${allDeps}"
+    echo "@@1"
+
+    addRts
+    addFfi
+    echo "LIB_FILE_NAME: ${LIB_FILE_NAME}"
+    echo "BUILT_LIB: ${BUILT_LIB}"
+    collectDeps ${LIB_FILE_NAME} ${BUILT_LIB}
+
+    echo "!!!!allDeps: ${allDeps}"
     
-#    mkdir -p ${LIB_DIR}
+    mkdir -p ${LIB_DIR}
 
-#    (rm ${LIB_DIR}/* || true) 2> /dev/null
-#    cp ${allDeps} ${LIB_DIR}
+    (rm ${LIB_DIR}/* || true) 2> /dev/null
+    cp ${allDeps} ${LIB_DIR}
     
     echo "!!!1"
     
@@ -231,15 +240,15 @@ updateLibs() {
     
     echo "!!!4"
 
-    reduceMinOsVer
+#    reduceMinOsVer
     
     echo "!!!5"
 
-#    signLibs
+    signLibs
     
 
-#    find ${LIB_DIR} | grep dylib$ > .filesToLink
-    echo ${LIB} > .filesToLink
+    find ${LIB_DIR} | grep dylib$ > .filesToLink
+#    echo ${LIB} > .filesToLink
     
     echo "!!!6"
 }
