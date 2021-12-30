@@ -7,24 +7,26 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E6524038277D385000ADA2A7 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E6524037277D384900ADA2A7 /* AVFoundation.framework */; };
+		E6524039277D385000ADA2A7 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E6524036277D384900ADA2A7 /* UIKit.framework */; };
 		E68F4AFA21EB4F8900ECEABD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E68F4AF921EB4F8900ECEABD /* Assets.xcassets */; };
 		E68F4AFD21EB4F8900ECEABD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E68F4AFB21EB4F8900ECEABD /* LaunchScreen.storyboard */; };
 		E68F4B0021EB4F8900ECEABD /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E68F4AFF21EB4F8900ECEABD /* main.m */; };
 		E6A8E4AD277D2AB9006263F0 /* Frameworks in Resources */ = {isa = PBXBuildFile; fileRef = E6A8E4AC277D2AB9006263F0 /* Frameworks */; };
-		E6FDFF6527521F3300D22CA3 /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = E6FDFF6427521F3300D22CA3 /* libiconv.tbd */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		3F81968A252A6B3000758A04 /* notekeeper.cabal */ = {isa = PBXFileReference; lastKnownFileType = text; path = notekeeper.cabal; sourceTree = "<group>"; };
 		E60862152468924000486ECB /* src */ = {isa = PBXFileReference; lastKnownFileType = folder; path = src; sourceTree = "<group>"; };
 		E60862162468933100486ECB /* build.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = build.sh; sourceTree = "<group>"; };
+		E6524036277D384900ADA2A7 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		E6524037277D384900ADA2A7 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		E68F4AED21EB4F8900ECEABD /* notekeeper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = notekeeper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E68F4AF921EB4F8900ECEABD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E68F4AFC21EB4F8900ECEABD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E68F4AFE21EB4F8900ECEABD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E68F4AFF21EB4F8900ECEABD /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		E6A8E4AC277D2AB9006263F0 /* Frameworks */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Frameworks; sourceTree = "<group>"; };
-		E6FDFF6427521F3300D22CA3 /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -32,13 +34,23 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E6FDFF6527521F3300D22CA3 /* libiconv.tbd in Frameworks */,
+				E6524038277D385000ADA2A7 /* AVFoundation.framework in Frameworks */,
+				E6524039277D385000ADA2A7 /* UIKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		E6524035277D383000ADA2A7 /* NativeFrameworks */ = {
+			isa = PBXGroup;
+			children = (
+				E6524037277D384900ADA2A7 /* AVFoundation.framework */,
+				E6524036277D384900ADA2A7 /* UIKit.framework */,
+			);
+			name = NativeFrameworks;
+			sourceTree = "<group>";
+		};
 		E68F4AE421EB4F8900ECEABD = {
 			isa = PBXGroup;
 			children = (
@@ -46,7 +58,7 @@
 				E68F4AFB21EB4F8900ECEABD /* LaunchScreen.storyboard */,
 				E68F4AFE21EB4F8900ECEABD /* Info.plist */,
 				E68F4AFF21EB4F8900ECEABD /* main.m */,
-				E68F4B0621EB4FE900ECEABD /* Frameworks */,
+				E6524035277D383000ADA2A7 /* NativeFrameworks */,
 				E6A8E4AC277D2AB9006263F0 /* Frameworks */,
 				E68F4AEE21EB4F8900ECEABD /* Products */,
 				E60862162468933100486ECB /* build.sh */,
@@ -61,14 +73,6 @@
 				E68F4AED21EB4F8900ECEABD /* notekeeper.app */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		E68F4B0621EB4FE900ECEABD /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				E6FDFF6427521F3300D22CA3 /* libiconv.tbd */,
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

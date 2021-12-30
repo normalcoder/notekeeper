@@ -1,4 +1,4 @@
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
 void hs_init_with_rtsopts(int *argc, const char **argv[]);
 void runHsMain(void);
