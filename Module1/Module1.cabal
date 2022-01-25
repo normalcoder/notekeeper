@@ -1,54 +1,22 @@
 cabal-version: 2.4
-name: notekeeper
+name: Module1
 version: 0.1.0.0
 author: username
 maintainer: email@example.com
 
 library
   exposed-modules:
-    App
-    AvHelpers
-    Camera
-    CurrentTime
-    Gcd
-    HsMain
-    IOHelpers
     Module1
-    Objc
-    ObjcClassManipulations
-    ObjcFunPtr
-    ObjcGlobalMixStorage
-    ObjcHelpers
-    ObjcMixStorage
-    ObjcMsg
-    ObjcMsgHelpers
-    ObjcMsgOps
-    ObjcMsgSt
-    ObjcTypes
-    Tree
-    Ui
-    UiKit
-    UiKitHelpers
-    UiKitText
-    View.Color
-    View.Image
-    View.Label
-    View.Layout
-    View.View
-  c-sources:
-    src/funcSt.c
-    src/objc_msgSendN.c
-    src/getCurrentTime.c
---  ghc-options:
+  ghc-options:
 --   -optc -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/include
 --   -optl -L/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/lib
   build-depends:
     base,
-    containers,
-    random,
+    --containers,
+    -- random,
     -- vector,
-    numeric-limits,
-    time,
+    -- numeric-limits,
+    -- time,
    
 --   aeson
 --   vector-algorithms
