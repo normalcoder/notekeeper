@@ -159,7 +159,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export \n#zsh build.sh\n";
+			shellScript = "export \nzsh build.sh\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

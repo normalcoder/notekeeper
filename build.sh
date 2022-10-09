@@ -120,8 +120,9 @@ markLibsForIos() {
 
 markLibsForSimulator() {
     # forall *.o: LC_BUILD_VERSION: PLATFORM_MACOS(1) -> PLATFORM_IOSSIMULATOR(7)
-    perl -pi -e 's/(\62\0\0\0.{4})\01\0\0\0/\1\07\0\0\0/g' ${LIB}
-    perl -pi -e 's/(\62\0\0\0.{4})\02\0\0\0/\1\07\0\0\0/g' ${LIB}
+    perl -pi -e 's/\x32\0\0\0\x20\0\0\0\x01\0\0\0\0\0(\x0b|\x0c)\0\0(\0|\x01|\x02|\x03|\x04)(\x0b|\x0c)\0/\x32\0\0\0\x20\0\0\0\x07\0\0\0\0\0\1\0\0\2\3\0/g' ${LIB_DIR}/*
+    # perl -pi -e 's/(\62\0\0\0.{4})\01\0\0\0/\1\07\0\0\0/g' ${LIB}
+    # perl -pi -e 's/(\62\0\0\0.{4})\02\0\0\0/\1\07\0\0\0/g' ${LIB}
 
 #    # forall *.o: LC_VERSION_MIN_IPHONEOS -> LC_BUILD_VERSION.PLATFORM_IOSSIMULATOR(7)
 #    perl -pi -e 's/\45\0\0\0\20\0\0\0(\0\0..)(\0\0..)/\62\0\0\0\20\0\0\0\07\0\0\0\1/g' ${LIB_DIR}
