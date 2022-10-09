@@ -159,7 +159,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export \nzsh build.sh\nzsh Module1/buildModule.sh\nditto Module1/Frameworks/libHSModule1-0.1.0.0-inplace-ghc9.4.2.dylib Frameworks/\n";
+			shellScript = "export \nzsh build.sh\nzsh Module1/buildModule.sh\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

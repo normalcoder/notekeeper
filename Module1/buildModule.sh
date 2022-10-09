@@ -276,4 +276,4 @@ updateLibs() {
 updateLibs
 #(isCurrentPlatformUnchanged && test -f ${LIB} && diff ${BUILT_LIB} ${RAW_LIB}) || updateLibs
 
-# ditto Frameworks/libHSModule1-0.1.0.0-inplace-ghc9.4.2.dylib ../Frameworks/
+ditto Frameworks/libHSModule1-0.1.0.0-inplace-ghc9.4.2.dylib ../Frameworks/libHSModule1.dylib
