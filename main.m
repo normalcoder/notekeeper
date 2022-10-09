@@ -10,7 +10,7 @@ int main(int argc, const char * argv[]) {
 //        NSLog(@"!!r: %@", r);
         
 //        char *argvToAdd[] = {"+RTS", "-N4", "--arbitrary-heap-start", "-RTS"};
-        char *argvToAdd[] = {"+RTS", "-N4", "-RTS"};
+        char *argvToAdd[] = {"+RTS", "-N8", "-RTS"};
         int argvToAddCnt = sizeof(argvToAdd)/sizeof(char *);
         int fixedArgc = argc + argvToAddCnt;
         const char **fixedArgv = malloc(sizeof(char *) * fixedArgc);
