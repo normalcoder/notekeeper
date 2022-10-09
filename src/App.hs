@@ -27,7 +27,7 @@ c_RTLD_LAZY = 1
 appDelegateClassName = "AppDelegate"
 
 run = do
- libFileName <- getNsString "Frameworks/libHSModule1-0.1.0.0-inplace-ghc9.2.1.dylib"
+ libFileName <- getNsString "Frameworks/libHSModule1-0.1.0.0-inplace-ghc9.4.2.dylib"
  -- print $ "!!!libFileName: " ++ show libFileName
  libPath <- "UTF8String" @< ("pathForResource:ofType:", [libFileName, nullPtr]) <.@@ "mainBundle" @| "NSBundle"
  libHandle <- c_dlopen libPath c_RTLD_LAZY
