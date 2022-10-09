@@ -129,7 +129,7 @@ markLibsForSimulator() {
 }
 
 signLibs() {
-    codesign -f -s 9BC6CBB53C42376BD19529C10FF83CDB0BDB38BB ${LIB_DIR}/*
+    codesign -f -s 949CA008AA70C44D456B5C63DFF47B488897AF14 ${LIB_DIR}/*
 }
 
 isCurrentPlatformUnchanged() {
@@ -194,7 +194,10 @@ addRts() {
 #libHSrts-1.0.2-ghc9.2.1.dylib
 #libffi.dylib
 #libHSrts-ghc
-    RTS_LIB_FILE=$(echo ${GHC_LIBS} | grep "rts.*thr_debug" | head -n 1)
+    # echo "$(zsh find_rts_lib.sh)"
+    # echo ${GHC_LIBS} | grep "$(zsh find_rts_lib.sh)"
+    echo ${GHC_LIBS}
+    RTS_LIB_FILE=$(echo ${GHC_LIBS} | grep "$(zsh find_rts_lib.sh)")
 #    RTS_LIB_FILE=$(echo ${GHC_LIBS} | grep "libHSrts-ghc8.10.7" | head -n 1)
 #    RTS_LIB_FILE=$(echo ${GHC_LIBS} | grep "libHSrts_thr_l-ghc8.10.7" | head -n 1)
 #    RTS_LIB_FILE=$(echo ${GHC_LIBS} | grep "libHSrts_thr_debug-ghc8.10.7" | head -n 1)
@@ -214,8 +217,10 @@ addFfi() {
 }
 
 updateLibs() {
-    CABAL_DIR=${HOME}/.cabal
-    GHCUP_DIR=${HOME}/.ghcup
+    # CABAL_DIR=${HOME}/.cabal
+    CABAL_DIR=$(zsh current_cabal_store_dir.sh)
+    # GHCUP_DIR=${HOME}/.ghcup
+    GHCUP_DIR=$(zsh current_ghc_dir.sh)
 
     CABAL_LIBS=$(find ${CABAL_DIR} | grep 'lib.*.dylib')
     GHC_LIBS=$(find ${GHCUP_DIR} | grep 'lib.*.dylib')
@@ -260,11 +265,14 @@ updateLibs() {
 
     signLibs
     
+    echo "!!!6"
 
+    echo "LIB_DIR: ${LIB_DIR}"
+    find ${LIB_DIR}
     find ${LIB_DIR} | grep dylib$ > .filesToLink
 #    echo ${LIB} > .filesToLink
     
-    echo "!!!6"
+    echo "!!!7"
 }
 
 updateLibs
