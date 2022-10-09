@@ -9,8 +9,8 @@ int main(int argc, const char * argv[]) {
 //        NSString *r = [[NSBundle mainBundle] pathForResource:@"Frameworks/libHSModule1-0.1.0.0-inplace-ghc9.2.1.dylib" ofType:nil];
 //        NSLog(@"!!r: %@", r);
         
-        char *argvToAdd[] = {"+RTS", "-N4", "--arbitrary-heap-start", "-RTS"};
-//        char *argvToAdd[] = {"+RTS", "-N4", "-RTS"};
+//        char *argvToAdd[] = {"+RTS", "-N4", "--arbitrary-heap-start", "-RTS"};
+        char *argvToAdd[] = {"+RTS", "-N4", "-RTS"};
         int argvToAddCnt = sizeof(argvToAdd)/sizeof(char *);
         int fixedArgc = argc + argvToAddCnt;
         const char **fixedArgv = malloc(sizeof(char *) * fixedArgc);
