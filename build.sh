@@ -192,28 +192,22 @@ collectDeps() {
 
 addRts() {
 #libHSrts-1.0.2-ghc9.2.1.dylib
-#libffi.dylib
 #libHSrts-ghc
     # echo "$(zsh find_rts_lib.sh)"
     # echo ${GHC_LIBS} | grep "$(zsh find_rts_lib.sh)"
-    echo ${GHC_LIBS}
-    RTS_LIB_FILE=$(echo ${GHC_LIBS} | grep "$(zsh find_rts_lib.sh)")
+    # echo ${GHC_LIBS}
+    RTS_LIB_FILE_NAME=$(zsh find_rts_lib.sh)
+    RTS_LIB_FILE=$(echo ${GHC_LIBS} | grep "${RTS_LIB_FILE_NAME}")
 #    RTS_LIB_FILE=$(echo ${GHC_LIBS} | grep "libHSrts-ghc8.10.7" | head -n 1)
 #    RTS_LIB_FILE=$(echo ${GHC_LIBS} | grep "libHSrts_thr_l-ghc8.10.7" | head -n 1)
 #    RTS_LIB_FILE=$(echo ${GHC_LIBS} | grep "libHSrts_thr_debug-ghc8.10.7" | head -n 1)
 #    RTS_LIB_FILE=$(echo ${GHC_LIBS} | grep "libHSrts-1.0.2_thr_debug-ghc9.2.1.dylib" | head -n 1)
 
-    echo "@@RTS_LIB_FILE: ${RTS_LIB_FILE}"
+    # echo "@@RTS_LIB_FILE: ${RTS_LIB_FILE}"
 
 
-    RTS_LIB_FILE_NAME=$(basename ${RTS_LIB_FILE})
+    # RTS_LIB_FILE_NAME=$(basename ${RTS_LIB_FILE})
     allDeps[${RTS_LIB_FILE_NAME}]=${RTS_LIB_FILE}
-}
-
-addFfi() {
-    FFI_LIB_FILE=$(echo ${GHC_LIBS} | grep "libffi.dylib" | head -n 1)
-    FFI_LIB_FILE_NAME=$(basename ${FFI_LIB_FILE})
-    allDeps[${FFI_LIB_FILE_NAME}]=${FFI_LIB_FILE}
 }
 
 updateLibs() {
@@ -229,7 +223,6 @@ updateLibs() {
     echo "@@1"
 
     addRts
-#    addFfi
     echo "LIB_FILE_NAME: ${LIB_FILE_NAME}"
     echo "BUILT_LIB: ${BUILT_LIB}"
     collectDeps ${LIB_FILE_NAME} ${BUILT_LIB}
