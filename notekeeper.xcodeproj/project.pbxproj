@@ -321,7 +321,7 @@
 					"-filelist",
 					"\"${SRCROOT}/.filesToLink\"",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.camnote.asdfdfgdf1312;
+				PRODUCT_BUNDLE_IDENTIFIER = com.notekeeper;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -347,7 +347,7 @@
 					"-filelist",
 					"\"${SRCROOT}/.filesToLink\"",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.camnote.asdfdfgdf1312;
+				PRODUCT_BUNDLE_IDENTIFIER = com.notekeeper;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
