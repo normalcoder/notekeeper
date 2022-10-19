@@ -27,7 +27,8 @@ c_RTLD_LAZY = 1
 appDelegateClassName = "AppDelegate"
 
 run = do
- libFileName <- getNsString "Frameworks/libHSModule1.dylib"
+ libFileName <- getNsString ""
+
  -- print $ "!!!libFileName: " ++ show libFileName
  libPath <- "UTF8String" @< ("pathForResource:ofType:", [libFileName, nullPtr]) <.@@ "mainBundle" @| "NSBundle"
  libHandle <- c_dlopen libPath c_RTLD_LAZY
@@ -36,10 +37,14 @@ run = do
  unloadFunName <- "UTF8String" @< getNsString "unloadModule1"
  loadFun <- mkFun <$> c_dlsym libHandle loadFunName
  unloadFun <- mkFun <$> c_dlsym libHandle unloadFunName
+
  loadFun
- unloadFun
- closeResult <- c_dlclose libHandle
- print $ "!!!closeResult: " ++ show closeResult
+ forkIO $ do
+  threadDelay $ 10*10^6
+  unloadFun
+  closeResult <- c_dlclose libHandle
+  print $ "!!!closeResult: " ++ show closeResult
+
 
  --forkIO $ mapM_ (\_ -> print "!!2simple_string123422") [1..1000000]
  createAppDelegate appDelegateClassName

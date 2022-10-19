@@ -2,19 +2,30 @@
 
 set -e
 
-# DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 DIR=${0:a:h}
+
+cd ${DIR}
+
+MODULE_NAME=$(basename ${1})
+MAIN_MODULE_NAME=notekeeper
+
+if [[ ${MODULE_NAME} == ${MAIN_MODULE_NAME} ]]; then
+    LINK_IMMEDIATELY=1
+else
+    LINK_IMMEDIATELY=0
+fi
+
+MODULE_DIR=${1}
+
+MAIN_DIR=$(dirname $(dirname ${MODULE_DIR}))
+ALL_FRAMEWORKS_DIR="${MAIN_DIR}/Frameworks"
 
 #source ~/.ghcup/env
 #export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
 #export PATH="/usr/local/bin:/opt/homebrew/opt/llvm/bin:$PATH"
 
-echo "cur dir: ${mydir}"
-
-cd ${DIR}
-
-MODULES=$(find src | grep .hs$ | sed "s/src\//    /" | sed "s/.hs//" | sed "s/\//./" | sort)
-perl -i -pe "BEGIN{undef $/;} s/(exposed-modules:)(.*?)(  [a-z])/\1\n${MODULES}\n\3/sm" Module1.cabal
+MODULES=$(cd ${MODULE_DIR} && find src | grep .hs$ | sed "s/src\//    /" | sed "s/.hs//" | sed "s/\//./" | sort)
+perl -i -pe "BEGIN{undef $/;} s/(exposed-modules:)(.*?)(  [a-z])/\1\n${MODULES}\n\3/sm" ${MODULE_DIR}/${MODULE_NAME}.cabal
 
 #env -i HOME="$HOME" PATH="$PATH" USER="$USER" cabal build --enable-static --ghc-options='-threaded -O2 +RTS -A64m -AL128m -qn8'
 #env -i HOME="$HOME" PATH="$PATH" USER="$USER" cabal build --enable-static --ghc-option=-threaded
@@ -32,7 +43,7 @@ perl -i -pe "BEGIN{undef $/;} s/(exposed-modules:)(.*?)(  [a-z])/\1\n${MODULES}\
 
 #env -i HOME="$HOME" PATH="$PATH" USER="$USER" cabal update
 #env -i HOME="$HOME" PATH="$PATH" USER="$USER" cabal build --enable-static --ghc-options="-fllvm -threaded -O2 +RTS -A64m -AL128m -qn8 -RTS -optc -Wno-nullability-completeness -optc -Wno-expansion-to-defined -optc -Wno-availability -optc -Wno-int-conversion -optc -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/ffi -optc -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/include -optl -L/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/lib"
-env -i HOME="$HOME" PATH="$PATH" USER="$USER" cabal build --ghc-options="-threaded -O2 +RTS -A64m -AL128m -qn8 -RTS -optc -Wno-nullability-completeness -optc -Wno-expansion-to-defined -optc -Wno-availability -optc -Wno-int-conversion"
+(cd ${MODULE_DIR} && env -i HOME="$HOME" PATH="$PATH" USER="$USER" cabal build --ghc-options="-threaded -O2 +RTS -A64m -AL128m -qn8 -RTS -optc -Wno-nullability-completeness -optc -Wno-expansion-to-defined -optc -Wno-availability -optc -Wno-int-conversion")
 #env -i HOME="$HOME" PATH="$PATH" USER="$USER" cabal build --ghc-options="-threaded -O2 +RTS -A64m -AL128m -qn8 -RTS -optc -Wno-nullability-completeness -optc -Wno-expansion-to-defined -optc -Wno-availability -optc -Wno-int-conversion -optc -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/ffi -optc -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/include -optl -L/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/lib"
 
 #env -i HOME="$HOME" PATH="$PATH" USER="$USER" cabal build --ghc-options="-fllvm -optc -Wno-nullability-completeness -optc -Wno-expansion-to-defined -optc -Wno-availability -optc -I/Library/Developer/CommandLineTools/SDKs/MacOSX12.0.sdk/usr/include/ffi -optc -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/include -optl -L/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/lib"
@@ -42,11 +53,11 @@ env -i HOME="$HOME" PATH="$PATH" USER="$USER" cabal build --ghc-options="-thread
 (rm -f cabal.project.local~* || true) 2> /dev/null
 
 
-LIB_DIR=${DIR}/Frameworks
+LIB_DIR=${MODULE_DIR}/Frameworks
 #LIB_DIR=${DIR}
 
 #BUILT_LIB=$(find ${DIR} | grep ".*inplace-.*a$")
-BUILT_LIB=$(find ${DIR}/dist-newstyle | grep ".*inplace-.*dylib$" | head -n 1)
+BUILT_LIB=$(find ${MODULE_DIR}/dist-newstyle | grep ".*inplace-.*dylib$" | head -n 1)
 #BUILT_LIB=$(find ${DIR}/dist-newstyle | grep ".*inplace-.*a$" | head -n 1)
 
 #echo "!!!BUILT_LIB: ${BUILT_LIB}"
@@ -58,7 +69,7 @@ LIB_FILE_NAME=$(basename ${BUILT_LIB})
 #LIB=${LIB_FILE_NAME}
 LIB=${LIB_DIR}/${LIB_FILE_NAME}
 
-RAW_LIB=${DIR}/.raw_${LIB_FILE_NAME}
+# RAW_LIB=${MODULE_DIR}/.raw_${LIB_FILE_NAME}
 
 
 IPHONEOS_PLATFORM="iphoneos"
@@ -66,7 +77,7 @@ IPHONESIMULATOR_PLATFORM="iphonesimulator"
 
 PLATFORM_NAME=${PLATFORM_NAME:-$IPHONEOS_PLATFORM}
 
-CURRENT_PLATFORM_FILE=.currentPlatform
+# CURRENT_PLATFORM_FILE=.currentPlatform
 
 reduceMinOsVer() {
     # forall *.o: LC_BUILD_VERSION: Minimum OS Version 12 -> 11
@@ -118,7 +129,7 @@ markLibsForIos() {
 
 
 
-    echo ${IPHONEOS_PLATFORM} > ${CURRENT_PLATFORM_FILE}
+    # echo ${IPHONEOS_PLATFORM} > ${CURRENT_PLATFORM_FILE}
 }
 
 markLibsForSimulator() {
@@ -130,17 +141,17 @@ markLibsForSimulator() {
 #    # forall *.o: LC_VERSION_MIN_IPHONEOS -> LC_BUILD_VERSION.PLATFORM_IOSSIMULATOR(7)
 #    perl -pi -e 's/\45\0\0\0\20\0\0\0(\0\0..)(\0\0..)/\62\0\0\0\20\0\0\0\07\0\0\0\1/g' ${LIB_DIR}
 
-    echo ${IPHONESIMULATOR_PLATFORM} > ${CURRENT_PLATFORM_FILE}
+    # echo ${IPHONESIMULATOR_PLATFORM} > ${CURRENT_PLATFORM_FILE}
 }
 
 signLibs() {
     codesign -f -s 949CA008AA70C44D456B5C63DFF47B488897AF14 ${LIB_DIR}/*
 }
 
-isCurrentPlatformUnchanged() {
-    grep -F ${PLATFORM_NAME} ${CURRENT_PLATFORM_FILE} > /dev/null
-#    exit 0
-}
+# isCurrentPlatformUnchanged() {
+#     grep -F ${PLATFORM_NAME} ${CURRENT_PLATFORM_FILE} > /dev/null
+# #    exit 0
+# }
 
 #echo "!!!$CABAL_LIBS"
 #echo "!!!$GHC_LIBS"
@@ -241,7 +252,7 @@ updateLibs() {
     
     echo "!!!1"
     
-    cp ${BUILT_LIB} ${RAW_LIB}
+    # cp ${BUILT_LIB} ${RAW_LIB}
     
     echo "!!!2"
     
@@ -267,7 +278,15 @@ updateLibs() {
 
     echo "LIB_DIR: ${LIB_DIR}"
     find ${LIB_DIR}
-    find ${LIB_DIR} | grep dylib$ > .filesToLink
+    # find ${LIB_DIR} | grep dylib$ > "${MODULE_DIR}/.filesToLink"
+    # FILES_TO_LINK=$(cd $(dirname ${LIB_DIR}) && find $(basename ${LIB_DIR}) | grep dylib$)
+    # if [ ${LINK_IMMEDIATELY} = 0 ]; then
+    #     FILES_TO_LINK=$(echo "${FILES_TO_LINK}" | grep -v ${LIB_FILE_NAME})
+    # fi
+    # # (cd ${LIB_DIR} && find . | grep dylib$ | grep -v ${LIB_FILE_NAME} > "${MODULE_DIR}/.filesToLink")
+    # echo "${FILES_TO_LINK}"
+    # echo "${FILES_TO_LINK}" > "${MODULE_DIR}/.filesToLink"
+    # LIB_FILE_NAME
 #    echo ${LIB} > .filesToLink
     
     echo "!!!7"
@@ -276,4 +295,22 @@ updateLibs() {
 updateLibs
 #(isCurrentPlatformUnchanged && test -f ${LIB} && diff ${BUILT_LIB} ${RAW_LIB}) || updateLibs
 
-ditto Frameworks/libHSModule1-0.1.0.0-inplace-ghc*.dylib ../Frameworks/libHSModule1.dylib
+mkdir -p "${ALL_FRAMEWORKS_DIR}"
+rsync -a ${MODULE_DIR}/Frameworks/* ${ALL_FRAMEWORKS_DIR}/
+
+FILES_TO_LINK=$(cd ${MODULE_DIR} && find Frameworks | grep dylib$)
+
+if [ ${LINK_IMMEDIATELY} = 0 ]; then
+    FILES_TO_LINK=$(echo "${FILES_TO_LINK}" | grep -v ${LIB_FILE_NAME})
+fi
+# (cd ${LIB_DIR} && find . | grep dylib$ | grep -v ${LIB_FILE_NAME} > "${MODULE_DIR}/.filesToLink")
+echo "${FILES_TO_LINK}"
+# echo "${FILES_TO_LINK}" > "${MAIN_DIR}/.filesToLink"
+
+{ echo $(cat "${MAIN_DIR}/.filesToLink") & echo "${FILES_TO_LINK}" } | sort | uniq | awk 'NF' > "${MAIN_DIR}/.filesToLink"
+
+
+# ditto "${MAIN_DIR}/.filesToLink" "${MAIN_DIR}/.tmp_filesToLink"
+# cat "${MODULE_DIR}/.filesToLink" >> "${MAIN_DIR}/.tmp_filesToLink"
+# sort "${MAIN_DIR}/.tmp_filesToLink" | uniq > "${MAIN_DIR}/.filesToLink"
+# rm "${MAIN_DIR}/.tmp_filesToLink"
