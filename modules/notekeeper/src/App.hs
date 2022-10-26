@@ -8,6 +8,8 @@ import Foreign.C
 --import View.View
 import Ui
 
+import Utils
+
 
 import Control.Concurrent
 
@@ -27,21 +29,32 @@ c_RTLD_LAZY = 1
 appDelegateClassName = "AppDelegate"
 
 run = do
- libFileName <- getNsString ""
+ libFileName <- getNsString "Frameworks/libHSModule1-0.1.0.0-inplace-ghc9.5.20221014.dylib"
 
- -- print $ "!!!libFileName: " ++ show libFileName
- libPath <- "UTF8String" @< ("pathForResource:ofType:", [libFileName, nullPtr]) <.@@ "mainBundle" @| "NSBundle"
- libHandle <- c_dlopen libPath c_RTLD_LAZY
- print $ "!!!libHandle: " ++ show libHandle
- loadFunName <- "UTF8String" @< getNsString "loadModule1"
- unloadFunName <- "UTF8String" @< getNsString "unloadModule1"
- loadFun <- mkFun <$> c_dlsym libHandle loadFunName
- unloadFun <- mkFun <$> c_dlsym libHandle unloadFunName
-
- loadFun
  forkIO $ do
+
+  -- print $ "!!!libFileName: " ++ show libFileName
+  libPath <- "UTF8String" @< ("pathForResource:ofType:", [libFileName, nullPtr]) <.@@ "mainBundle" @| "NSBundle"
+  libHandle <- c_dlopen libPath c_RTLD_LAZY
+  print $ "!!!libHandle: " ++ show libHandle
+  loadFunName <- "UTF8String" @< getNsString "loadModule1"
+  unloadFunName <- "UTF8String" @< getNsString "unloadModule1"
+  loadFun <- mkFun <$> c_dlsym libHandle loadFunName
+  unloadFun <- mkFun <$> c_dlsym libHandle unloadFunName
+
+  loadFun
+
   threadDelay $ 10*10^6
-  unloadFun
+
+  module1ThreadId <- loadThreadId "m1"
+  print $ "!!!will unload"
+  killThread module1ThreadId
+  print $ "!!!killed"
+
+  
+  --unloadFun
+  threadDelay $ 5*10^6
+  print $ "!!!will close module"
   closeResult <- c_dlclose libHandle
   print $ "!!!closeResult: " ++ show closeResult
 

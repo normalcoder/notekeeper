@@ -57,7 +57,7 @@ LIB_DIR=${MODULE_DIR}/Frameworks
 #LIB_DIR=${DIR}
 
 #BUILT_LIB=$(find ${DIR} | grep ".*inplace-.*a$")
-BUILT_LIB=$(find ${MODULE_DIR}/dist-newstyle | grep ".*inplace-.*dylib$" | head -n 1)
+BUILT_LIB=$(find ${MODULE_DIR}/dist-newstyle | grep "libHS${MODULE_NAME}.*inplace-.*dylib$" | head -n 1)
 #BUILT_LIB=$(find ${DIR}/dist-newstyle | grep ".*inplace-.*a$" | head -n 1)
 
 #echo "!!!BUILT_LIB: ${BUILT_LIB}"
@@ -172,17 +172,36 @@ findFile() {
     echo ${HASKELL_LIBS} | grep $1$ | head -n 1
 }
 
+findFileLocally() {
+#    echo "!!!findFile: $1"
+#    SYSTEM_FILE=$(echo ${CABAL_LIBS} | grep $1$ | head -n 1)
+#    echo "!!!findFile SYSTEM_FILE: $SYSTEM_FILE"
+#    q=${SYSTEM_FILE:-$(echo ${GHCUP_DIR} | grep $1$ | head -n 1)}
+#    echo "!!!findFile q: $q"
+#    echo $q
+    
+    find ${MODULE_DIR}/dist-newstyle | grep $1$ | head -n 1
+}
+
+
+BUILT_LIB=$(find ${MODULE_DIR}/dist-newstyle | grep "libHS${MODULE_NAME}.*inplace-.*dylib$" | head -n 1)
+
+
 collectDeps() {
 #    echo "!!!collectDeps: key: $1, value: $2"
+    echo "!!!collectDeps: ($1), ($2)"
 
-    FILE=${2:-$(findFile $1)}
+    EXT_FILE=${2:-$(findFile $1)}
+    FILE=${EXT_FILE:-$(findFileLocally $1)}
 #    echo "!!!will assign ${1} -> $FILE"
 #    echo "!!!allDeps before: ${allDeps[$1]}"
     allDeps[$1]=${FILE}
 #    echo "!!!allDeps: ${allDeps}"
 #    echo "!!!allDeps after: ${allDeps[$1]}"
+    echo "!!!otool for: ${FILE}"
     otool -L ${FILE} | grep -o 'libHS.*.dylib' | while read line
     do
+        echo "!!!otool line: ${line}"
 #        echo "@@@line: key: $line, value: ${allDeps[$line]}"
         [ -z "${allDeps[$line]}" ] && collectDeps $line
 #        q=${allDeps[$line]}
