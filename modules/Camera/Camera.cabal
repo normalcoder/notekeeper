@@ -1,0 +1,20 @@
+cabal-version: 3.8
+name: Camera
+version: 0.1.0.0
+author: username
+maintainer: email@example.com
+
+library
+  exposed-modules:
+    AvHelpers
+    Camera
+  ghc-options:
+  build-depends:
+    base,
+
+    Objc,
+    UiKit,
+    IOHelpers,
+    Gcd,
+  hs-source-dirs: src
+  default-language: GHC2021

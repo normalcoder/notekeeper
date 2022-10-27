@@ -1,0 +1,2 @@
+packages:
+    ./ ./../Gcd/*.cabal ./../IOHelpers/*.cabal ./../UiKit/*.cabal ./../Objc/*.cabal
