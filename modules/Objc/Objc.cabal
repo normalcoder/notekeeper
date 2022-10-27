@@ -20,7 +20,6 @@ library
   c-sources:
     src/funcSt.c
     src/objc_msgSendN.c
-    src/getCurrentTime.c
   ghc-options:
   build-depends:
     base,

@@ -1,2 +1,2 @@
 packages:
-    ./ ./../Utils/*.cabal
+    ./ ./../View/*.cabal ./../Camera/*.cabal ./../Gcd/*.cabal ./../IOHelpers/*.cabal ./../UiKit/*.cabal ./../Objc/*.cabal

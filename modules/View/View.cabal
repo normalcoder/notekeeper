@@ -1,0 +1,23 @@
+cabal-version: 3.8
+name: View
+version: 0.1.0.0
+author: username
+maintainer: email@example.com
+
+library
+  exposed-modules:
+    Tree
+    View.Color
+    View.Image
+    View.Label
+    View.Layout
+    View.View
+  ghc-options:
+  build-depends:
+    base,
+    numeric-limits,
+
+    Objc,
+    UiKit,
+  hs-source-dirs: src
+  default-language: GHC2021

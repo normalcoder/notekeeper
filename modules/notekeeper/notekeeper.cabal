@@ -7,38 +7,11 @@ maintainer: email@example.com
 library
   exposed-modules:
     App
-    AvHelpers
-    Camera
     CheckLoading
     CurrentTime
-    Gcd
     HsMain
-    IOHelpers
-    Module1
-    Objc
-    ObjcClassManipulations
-    ObjcFunPtr
-    ObjcGlobalMixStorage
-    ObjcHelpers
-    ObjcMixStorage
-    ObjcMsg
-    ObjcMsgHelpers
-    ObjcMsgOps
-    ObjcMsgSt
-    ObjcTypes
-    Tree
     Ui
-    UiKit
-    UiKitHelpers
-    UiKitText
-    View.Color
-    View.Image
-    View.Label
-    View.Layout
-    View.View
   c-sources:
-    src/funcSt.c
-    src/objc_msgSendN.c
     src/getCurrentTime.c
 --  ghc-options:
 --   -optc -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/include
@@ -50,8 +23,13 @@ library
     -- vector,
     numeric-limits,
     time,
+
+    Objc,
+    UiKit,
+    Camera,
+    View,
    
-    Utils,
+--    Utils,
     
 --   aeson
 --   vector-algorithms

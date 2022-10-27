@@ -13,11 +13,14 @@ library
   build-depends:
     base,
     --containers,
-    random,
-    Objc,
     -- vector,
     -- numeric-limits,
     -- time,
+
+    Objc,
+    UiKit,
+    Camera,
+    View,
    
 --   aeson
 --   vector-algorithms

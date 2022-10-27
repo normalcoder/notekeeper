@@ -8,7 +8,7 @@ import Foreign.C
 --import View.View
 import Ui
 
-import Utils
+--import Utils
 
 import Control.Concurrent
 
