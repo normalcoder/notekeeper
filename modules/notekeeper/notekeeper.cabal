@@ -9,6 +9,7 @@ library
     App
     AvHelpers
     Camera
+    CheckLoading
     CurrentTime
     Gcd
     HsMain

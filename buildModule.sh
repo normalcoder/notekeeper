@@ -20,6 +20,9 @@ MODULE_DIR=${1}
 MAIN_DIR=$(dirname $(dirname ${MODULE_DIR}))
 ALL_FRAMEWORKS_DIR="${MAIN_DIR}/Frameworks"
 
+# BUILD_DIR="${MAIN_DIR}/dist-newstyle"
+BUILD_DIR="${MODULE_DIR}/dist-newstyle"
+
 #source ~/.ghcup/env
 #export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
 #export PATH="/usr/local/bin:/opt/homebrew/opt/llvm/bin:$PATH"
@@ -41,9 +44,10 @@ perl -i -pe "BEGIN{undef $/;} s/(exposed-modules:)(.*?)(  [a-z])/\1\n${MODULES}\
 
 #-fllvm
 
+
 #env -i HOME="$HOME" PATH="$PATH" USER="$USER" cabal update
 #env -i HOME="$HOME" PATH="$PATH" USER="$USER" cabal build --enable-static --ghc-options="-fllvm -threaded -O2 +RTS -A64m -AL128m -qn8 -RTS -optc -Wno-nullability-completeness -optc -Wno-expansion-to-defined -optc -Wno-availability -optc -Wno-int-conversion -optc -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/ffi -optc -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/include -optl -L/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/lib"
-(cd ${MODULE_DIR} && env -i HOME="$HOME" PATH="$PATH" USER="$USER" cabal build --ghc-options="-threaded -O2 +RTS -A64m -AL128m -qn8 -RTS -optc -Wno-nullability-completeness -optc -Wno-expansion-to-defined -optc -Wno-availability -optc -Wno-int-conversion")
+(cd ${MODULE_DIR} && env -i HOME="$HOME" PATH="$PATH" USER="$USER" cabal build --builddir=${BUILD_DIR} --ghc-options="-threaded -O2 +RTS -A64m -AL128m -qn8 -RTS -optc -Wno-nullability-completeness -optc -Wno-expansion-to-defined -optc -Wno-availability -optc -Wno-int-conversion")
 #env -i HOME="$HOME" PATH="$PATH" USER="$USER" cabal build --ghc-options="-threaded -O2 +RTS -A64m -AL128m -qn8 -RTS -optc -Wno-nullability-completeness -optc -Wno-expansion-to-defined -optc -Wno-availability -optc -Wno-int-conversion -optc -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/ffi -optc -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/include -optl -L/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/lib"
 
 #env -i HOME="$HOME" PATH="$PATH" USER="$USER" cabal build --ghc-options="-fllvm -optc -Wno-nullability-completeness -optc -Wno-expansion-to-defined -optc -Wno-availability -optc -I/Library/Developer/CommandLineTools/SDKs/MacOSX12.0.sdk/usr/include/ffi -optc -I/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/include -optl -L/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/lib"
@@ -57,7 +61,7 @@ LIB_DIR=${MODULE_DIR}/Frameworks
 #LIB_DIR=${DIR}
 
 #BUILT_LIB=$(find ${DIR} | grep ".*inplace-.*a$")
-BUILT_LIB=$(find ${MODULE_DIR}/dist-newstyle | grep "libHS${MODULE_NAME}.*inplace-.*dylib$" | head -n 1)
+BUILT_LIB=$(find ${BUILD_DIR} | grep "libHS${MODULE_NAME}.*inplace-.*dylib$" | head -n 1)
 #BUILT_LIB=$(find ${DIR}/dist-newstyle | grep ".*inplace-.*a$" | head -n 1)
 
 #echo "!!!BUILT_LIB: ${BUILT_LIB}"
@@ -180,16 +184,16 @@ findFileLocally() {
 #    echo "!!!findFile q: $q"
 #    echo $q
     
-    find ${MODULE_DIR}/dist-newstyle | grep $1$ | head -n 1
+    find ${BUILD_DIR} | grep $1$ | head -n 1
 }
 
 
-BUILT_LIB=$(find ${MODULE_DIR}/dist-newstyle | grep "libHS${MODULE_NAME}.*inplace-.*dylib$" | head -n 1)
+BUILT_LIB=$(find ${BUILD_DIR} | grep "libHS${MODULE_NAME}.*inplace-.*dylib$" | head -n 1)
 
 
 collectDeps() {
 #    echo "!!!collectDeps: key: $1, value: $2"
-    echo "!!!collectDeps: ($1), ($2)"
+    # echo "!!!collectDeps: ($1), ($2)"
 
     EXT_FILE=${2:-$(findFile $1)}
     FILE=${EXT_FILE:-$(findFileLocally $1)}
@@ -198,10 +202,10 @@ collectDeps() {
     allDeps[$1]=${FILE}
 #    echo "!!!allDeps: ${allDeps}"
 #    echo "!!!allDeps after: ${allDeps[$1]}"
-    echo "!!!otool for: ${FILE}"
+    # echo "!!!otool for: ${FILE}"
     otool -L ${FILE} | grep -o 'libHS.*.dylib' | while read line
     do
-        echo "!!!otool line: ${line}"
+        # echo "!!!otool line: ${line}"
 #        echo "@@@line: key: $line, value: ${allDeps[$line]}"
         [ -z "${allDeps[$line]}" ] && collectDeps $line
 #        q=${allDeps[$line]}

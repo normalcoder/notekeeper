@@ -1,0 +1,29 @@
+cabal-version: 3.8
+name: Objc
+version: 0.1.0.0
+author: username
+maintainer: email@example.com
+
+library
+  exposed-modules:
+    Objc
+    ObjcClassManipulations
+    ObjcFunPtr
+    ObjcGlobalMixStorage
+    ObjcHelpers
+    ObjcMixStorage
+    ObjcMsg
+    ObjcMsgHelpers
+    ObjcMsgOps
+    ObjcMsgSt
+    ObjcTypes
+  c-sources:
+    src/funcSt.c
+    src/objc_msgSendN.c
+    src/getCurrentTime.c
+  ghc-options:
+  build-depends:
+    base,
+    containers,
+  hs-source-dirs: src
+  default-language: GHC2021
