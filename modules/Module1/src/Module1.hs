@@ -17,13 +17,13 @@ foreign export ccall unloadModule1 :: IO ()
 
 loadModule1 = do
  print "real_loadModule1"
- uiHandle <- addUi ui
- putMVar uiHandleVar uiHandle
+ -- uiHandle <- addUi ui
+ -- putMVar uiHandleVar uiHandle
 
 unloadModule1 = do
  print $ "real_unloadModule1"
- uiHandle <- takeMVar uiHandleVar
- removeUi uiHandle
+ -- uiHandle <- takeMVar uiHandleVar
+ -- removeUi uiHandle
 
 ui = undefined
 {-
