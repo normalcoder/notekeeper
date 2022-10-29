@@ -1,9 +1,23 @@
+{-# language DeriveAnyClass #-}
+
+
 module Ui
-( createUi,
-  UiHandle,
-  addUi,
-  removeUi
+( createUi
+, UiHandle
+, addUi
+, removeUi
+, startUiLoop
+
+, module Control.Monad
+, module View.View
+, module View.Color
+, module View.Layout
+, module View.Label
+, module Tree
+
 ) where
+
+import Control.DeepSeq
 
 import Control.Monad
 
@@ -14,10 +28,86 @@ import View.View
 import View.Color
 import View.Layout
 import View.Label
+import Tree
+import Gcd
 
-data UiHandle = UiHandle
-addUi = undefined
-removeUi = undefined
+import Control.Concurrent
+import Control.Concurrent.MVar
+
+import System.IO.Unsafe
+
+--newtype UiHandle = UiHandle View
+newtype UiHandle = UiHandle Id deriving (Show)
+
+type ModuleName = String
+
+{-# NOINLINE uisVar #-}
+uisVar :: MVar [(ModuleName, UiHandle)]
+uisVar = unsafePerformIO $ newMVar []
+
+{-# NOINLINE newUiVar #-}
+newUiVar :: MVar (ModuleName, ViewSpec q)
+newUiVar = unsafePerformIO $ newEmptyMVar
+
+{-# NOINLINE moduleNameToRemoveVar #-}
+moduleNameToRemoveVar :: MVar ModuleName
+moduleNameToRemoveVar = unsafePerformIO $ newEmptyMVar
+
+
+addUi ui = do
+ print $ (force ui)
+ putMVar newUiVar (force ui)
+
+startRemovingUiLoop = forkIO go
+ where
+ go = do
+  moduleNameToRemove <- takeMVar moduleNameToRemoveVar
+  uis <- takeMVar uisVar
+  let (_, (UiHandle viewToRemove)) = head $ filter (\(name,_) -> name == moduleNameToRemove) uis
+  onMainThread $ removeFromSuperview viewToRemove
+  -- putMVar moduleNameToRemoveVar Nothing
+  let filteredUis = filter (\(name,_) -> name /= moduleNameToRemove) uis
+  putMVar uisVar filteredUis
+  
+  go
+
+
+startUiLoop = do
+ startRemovingUiLoop
+ forkIO go
+ where
+ go = do
+  print $ "waiting for new ui..."
+  (moduleName, newUi) <- takeMVar newUiVar
+  print $ "newUi: " ++ show newUi
+
+  onMainThread $ do
+   uiHandle <- addNewUi newUi
+{-
+
+   uis <- takeMVar uisVar
+   putMVar uisVar ((moduleName, uiHandle):uis)
+-}
+
+   pure ()
+  go
+
+addNewUi ui = do
+ w <- "keyWindow" @< "sharedApplication" @| "UIApplication"
+ vc <- "rootViewController" @<. w
+ rootView <- "view" @<. vc
+ -- view@(View spec (Node subview@(UIView rawSubview) _)) <- build1 ui
+ -- Superview rootView `addSubviewAndPin` view
+
+ -- v <- "new" @| "UIView"
+ view@(View spec (Node subview@(UIView v) _)) <- build1 (force ui)
+ -- v <- build1 ui
+ Superview rootView `addSubview` Subview v
+ pure (UiHandle v)
+
+--removeUi (UiHandle view@(View spec (Node subview@(UIView rawSubview) _))) = do
+removeUi moduleName = do
+ putMVar moduleNameToRemoveVar moduleName
 
 
 ui1 i = stackH $ do

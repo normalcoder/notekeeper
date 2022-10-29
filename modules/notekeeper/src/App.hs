@@ -18,6 +18,7 @@ foreign import ccall safe "UIApplicationMain" c_UIApplicationMain :: Int -> Ptr 
 appDelegateClassName = "AppDelegate"
 
 run = do
+ startUiLoop
  checkLoading
  createAppDelegate appDelegateClassName
  c_UIApplicationMain 0 nullPtr nullPtr =<< getNsString appDelegateClassName

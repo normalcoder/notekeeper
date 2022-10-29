@@ -39,7 +39,7 @@ checkLoading = forkIO $ do
  pause
  closeLib libHandle2
 
-pause = threadDelay $ 10*10^6
+pause = threadDelay $ 2*10^6
 
 moduleName1 = "Module1"
 moduleName2 = "Module2"

@@ -10,7 +10,6 @@ library
     CheckLoading
     CurrentTime
     HsMain
-    Ui
   c-sources:
     src/getCurrentTime.c
 --  ghc-options:
@@ -28,6 +27,7 @@ library
     UiKit,
     Camera,
     View,
+    Ui,
    
 --    Utils,
     

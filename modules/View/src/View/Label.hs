@@ -1,3 +1,5 @@
+{-# language DeriveAnyClass, DerivingStrategies #-}
+
 module View.Label
 ( Font(..)
 , FontName(..)
@@ -7,6 +9,9 @@ module View.Label
 , defaultFont
 , textSize
 ) where
+
+import GHC.Generics hiding (R)
+import Control.DeepSeq
 
 import Foreign
 import Numeric.Limits
@@ -18,10 +23,10 @@ import ObjcMsgSt
 import ObjcHelpers
 import UiKitText
 
-data Font = Font FontName FontSize deriving (Show)
-newtype FontName = FontName String deriving (Show)
-newtype FontSize = FontSize CGFloat deriving (Show)
-newtype LineCount = LineCount { _rawLineCount :: Int } deriving (Show)
+data Font = Font FontName FontSize deriving (Generic, NFData, Show, Read)
+newtype FontName = FontName String deriving stock (Generic, Show, Read) deriving anyclass (NFData)
+newtype FontSize = FontSize CGFloat deriving stock (Generic, Show, Read) deriving anyclass (NFData)
+newtype LineCount = LineCount { _rawLineCount :: Int } deriving stock (Generic, Show, Read) deriving anyclass (NFData)
 
 -- SF
 defaultFont = Font (FontName ".SFUI-Regular") (FontSize 17)
@@ -33,7 +38,7 @@ data BreakMode =
  | TruncatingHead
  | TruncatingTail
  | TruncatingMiddle
- deriving (Show)
+ deriving (Generic, NFData, Show, Read)
 
 
 textSize text (Font (FontName name) (FontSize fontSize)) width = do

@@ -1,3 +1,5 @@
+{-# language DeriveAnyClass, DerivingStrategies #-}
+
 module View.Color
 ( Color(..)
 , R(..)
@@ -16,13 +18,16 @@ module View.Color
 , uiColor
 ) where
 
+import GHC.Generics hiding (R)
+import Control.DeepSeq
+
 import Objc
 
-data Color = Color R G B A deriving (Show)
-newtype R = R CGFloat deriving (Show)
-newtype G = G CGFloat deriving (Show)
-newtype B = B CGFloat deriving (Show)
-newtype A = A CGFloat deriving (Show)
+data Color = Color R G B A deriving (Generic, NFData, Show, Read)
+newtype R = R CGFloat deriving stock (Generic, Show, Read) deriving anyclass (NFData)
+newtype G = G CGFloat deriving stock (Generic, Show, Read) deriving anyclass (NFData)
+newtype B = B CGFloat deriving stock (Generic, Show, Read) deriving anyclass (NFData)
+newtype A = A CGFloat deriving stock (Generic, Show, Read) deriving anyclass (NFData)
 
 black = Color (R 0) (G 0) (B 0) (A 1)
 white = Color (R 1) (G 1) (B 1) (A 1)

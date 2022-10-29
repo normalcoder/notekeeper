@@ -18,6 +18,9 @@ library
     -- numeric-limits,
     -- time,
    
+    Ui,
+    Gcd,
+
 --   aeson
 --   vector-algorithms
 --   megaparsec

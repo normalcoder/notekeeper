@@ -12,6 +12,7 @@ library
   ghc-options:
   build-depends:
     base,
+    deepseq,
     random,
 
     Objc,

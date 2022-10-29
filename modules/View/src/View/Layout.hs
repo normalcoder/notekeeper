@@ -1,6 +1,12 @@
+{-# language DeriveAnyClass, DerivingStrategies #-}
+
 module View.Layout
 ( addSubviewAndPin
+, unpin
 ) where
+
+import GHC.Generics
+import Control.DeepSeq
 
 import Control.Monad
 import Data.Foldable
@@ -27,6 +33,8 @@ addSubviewAndPin v@(Superview superview) subviewDef@(View spec (Node subview@(UI
 
    -- widthRest <- newIORef
    layoutSubviews ((w,h), subviewDef)
+
+unpin superview = unmixLast superview "layoutSubviews"
 
 {-
 | text1 |       |
@@ -66,7 +74,7 @@ layoutSubviews
 
 
 -- data LayoutType a = HasSize (LayoutSize a) | Unlimited deriving (Show)
-data LayoutSize a = Resolved a | Suggested a | Unlimited deriving (Show, Ord, Eq)
+data LayoutSize a = Resolved a | Suggested a | Unlimited deriving (Generic, NFData, Show, Read, Ord, Eq)
 
 
 isResolved (Resolved _) = True

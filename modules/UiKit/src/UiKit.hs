@@ -4,6 +4,7 @@ module UiKit
 , UIScrollView(..)
 , addSubview
 , addSubview'
+, removeFromSuperview
 , safeSetFrame
 , setContentSize
 , Rect
@@ -12,14 +13,18 @@ module UiKit
 , module UiKitHelpers
 ) where
 
+
+import GHC.Generics
+import Control.DeepSeq
+
 import Objc
 import UiKitHelpers
 
-newtype UIView = UIView { _rawUiView :: Id } deriving (Show)
-newtype UIScrollView = UIScrollView UIView deriving (Show)
+newtype UIView = UIView { _rawUiView :: Id } deriving (Generic, NFData, Show)
+newtype UIScrollView = UIScrollView UIView deriving (Generic, NFData, Show)
 -- newtype UiView = UiView Id
-newtype Subview = Subview Id
-newtype Superview = Superview Id
+newtype Subview = Subview Id deriving (Generic, NFData)
+newtype Superview = Superview Id deriving (Generic, NFData)
 
 
 type Rect = (CGFloat, CGFloat, CGFloat, CGFloat)
@@ -49,6 +54,10 @@ safeSetFrame (x, y, w, h) (UIView v) = do
 
 addSubview (Superview superview) (Subview subview) = do
  ("addSubview:", subview) <.@. superview
+ pure ()
+
+removeFromSuperview view = do
+ "removeFromSuperview" @<. view
  pure ()
 
 setContentSize size (UIScrollView (UIView v)) = do

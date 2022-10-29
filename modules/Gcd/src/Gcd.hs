@@ -1,5 +1,7 @@
 module Gcd
 ( onMainThread
+, onMainThread1
+, onMainThread2
 , getBackgroundQueue
 ) where
 
@@ -9,11 +11,21 @@ import Foreign.C.Types
 type GcdQueue = Ptr ()
 type GcdDispatchFunction = FunPtr (IO ())
 
+onMainThread1 :: IO () -> IO ()
+onMainThread1 a = do
+ pure ()
+
+onMainThread2 a = do
+ f <- toFunPtr1 a
+ let mainQueue = c__dispatch_main_q
+ c_dispatch_async_f mainQueue nullPtr f
+ pure f
+
 onMainThread a = do
  f <- toFunPtr1 a
  let mainQueue = c__dispatch_main_q
  c_dispatch_async_f mainQueue nullPtr f
- return ()
+ pure ()
 
 -- dispatch_async_f(dispatch_get_main_queue(), void *context, dispatch_function_t work)
 

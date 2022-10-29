@@ -1,10 +1,15 @@
+{-# language DeriveAnyClass #-}
+
 module Tree
 ( Tree(..)
 , zipTree
 , zipTree3
 ) where
 
-data Tree a = Node a [Tree a] deriving (Show)
+import GHC.Generics
+import Control.DeepSeq
+
+data Tree a = Node a [Tree a] deriving (Generic, NFData, Show, Read)
 
 instance Functor Tree where
  fmap f (Node x ts) = Node (f x) (map (fmap f) ts)

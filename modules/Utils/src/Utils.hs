@@ -1,6 +1,10 @@
 module Utils (
   saveThreadId,
-  loadThreadId
+  loadThreadId,
+  saveUiHandle,
+  loadUiHandle,
+  onMainThreadWrap,
+  onMainThreadWrap2
 ) where
 
 import Data.IORef
@@ -8,6 +12,30 @@ import Control.Concurrent
 import Control.Concurrent.MVar
 import GHC.IO
 import System.Random
+
+import Ui
+
+import Gcd
+
+onMainThreadWrap act = do
+ onMainThread act
+
+onMainThreadWrap2 = do
+ forkIO $ do
+  onMainThread $ print "action in main"
+ pure ()
+
+saveUiHandle uiHandle = do
+ print $ "!!saving uiHandle" ++ show uiHandle
+ writeIORef uiHandleVar (Just uiHandle)
+ print $ "!!saved"
+
+loadUiHandle = do
+ print "!!!loading uiHandle..."
+ uiHandle <- readIORef uiHandleVar
+ writeIORef uiHandleVar Nothing
+ print "!!!removed uiHandle"
+ pure uiHandle
 
 saveThreadId key threadId = do
  print $ "!!saving threadId" ++ show threadId
@@ -55,11 +83,9 @@ unloadModule1 = do
 
 -}
 
-{-
-{-# NOINLINE threadIdVar #-}
-threadIdVar :: MVar ThreadId
-threadIdVar = unsafePerformIO $ newEmptyMVar
--}
+{-# NOINLINE uiHandleVar #-}
+uiHandleVar :: IORef (Maybe UiHandle)
+uiHandleVar = unsafePerformIO $ newIORef Nothing
 
 {-# NOINLINE threadIdVar #-}
 threadIdVar :: IORef (Maybe ThreadId)

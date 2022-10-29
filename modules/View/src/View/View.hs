@@ -1,5 +1,5 @@
-{-# language ScopedTypeVariables #-}
-
+{-# language ScopedTypeVariables, DeriveAnyClass, DerivingStrategies #-}
+-- {-# LANGUAGE DefaultSignatures, DeriveAnyClass #-}
 module View.View
 ( ViewSpec(..)
 , ViewSpecImpl(..)
@@ -14,6 +14,7 @@ module View.View
 , DesiredSize(..)
 -- , IsVertical(..)
 , build
+, build1
 , scroll
 , stack
 , stackH
@@ -24,6 +25,9 @@ module View.View
 -- , v1Spec
 , view
 ) where
+
+import GHC.Generics
+import Control.DeepSeq
 
 import Control.Monad
 import Control.Applicative
@@ -43,6 +47,8 @@ import Prelude hiding (Left, Right)
 -- Screen
 
 
+data SOHandles = SOHandles deriving (Generic, NFData)
+
 data View = View { _spec :: ViewSpecImpl, _viewTree :: ViewTree } deriving (Show)
 
 type ViewTree = Tree UIView
@@ -58,18 +64,25 @@ data ViewSpecImpl = ViewSpecImpl {
  -- _intrinsicSize :: IntrinsicSize,
  -- _isScreen :: IsScreen,
  -- _pathComps :: [PathComp]
-} deriving (Show)
+} deriving (Generic, NFData, Show)
 
 data Kind =
    Container (Maybe Tappable) Direction [ViewSpecImpl]
  | Scroll ViewSpecImpl
  | Label Font (Maybe LineCount) BreakMode (GetInfo String)
- | Image Aspect (GetInfo UIImage) deriving (Show)
- -- | Image (Maybe (Width, Height)) Aspect (GetInfo UIImage) deriving (Show)
+ | Image Aspect (GetInfo UIImage)
+ -- | Image (Maybe (Width, Height)) Aspect (GetInfo UIImage)
+ deriving (Generic, NFData, Show)
 
-data Tappable = Tappable (IO ())
+data Tappable = Tappable (IO ()) deriving (Generic)
 
-newtype GetInfo a = GetInfo (IO a)
+instance NFData Tappable where
+ rnf _ = ()
+
+newtype GetInfo a = GetInfo (IO a) deriving (Generic)
+
+instance NFData (GetInfo a) where
+ rnf _ = ()
 
 instance Show (GetInfo a) where
  show _ = "GetInfo"
@@ -77,29 +90,37 @@ instance Show (GetInfo a) where
 instance Show Tappable where
  show _ = "Tappable"
 
-newtype PathComp = PathComp String deriving (Show)
+{-
+instance Read (GetInfo a) where
+ readsPrec _ "GetInfo" = [(GetInfo (pure ()), "")]
 
-data Direction = Vertical | Horizontal | Overlap deriving (Eq, Show)
-data IsScreen = Screen | NotScreen deriving (Show)
+instance Read Tappable where
+ readsPrec _ "Tappable" = [(Tappable (pure ()), "")]
+-}
 
-data Insets = Insets Left Right Top Bottom deriving (Show)
-newtype Left = Left CGFloat deriving (Show)
-newtype Right = Right CGFloat deriving (Show)
-newtype Top = Top CGFloat deriving (Show)
-newtype Bottom = Bottom CGFloat deriving (Show)
+newtype PathComp = PathComp String deriving stock (Generic, Show) deriving anyclass (NFData)
+
+data Direction = Vertical | Horizontal | Overlap deriving (Generic, NFData, Eq, Show)
+data IsScreen = Screen | NotScreen deriving (Generic, NFData, Show)
+
+data Insets = Insets Left Right Top Bottom deriving (Generic, NFData, Show)
+newtype Left = Left CGFloat deriving stock (Generic, Show) deriving anyclass (NFData)
+newtype Right = Right CGFloat deriving stock (Generic, Show) deriving anyclass (NFData)
+newtype Top = Top CGFloat deriving stock (Generic, Show) deriving anyclass (NFData)
+newtype Bottom = Bottom CGFloat deriving stock (Generic, Show) deriving anyclass (NFData)
 
 
-newtype Priority = Priority Double deriving (Show)
-data Padding = Padding (Maybe Left) (Maybe Right) (Maybe Top) (Maybe Bottom) deriving (Show)
-data Constraints = Constraints (Maybe MinWidth) (Maybe MaxWidth) (Maybe MinHeight) (Maybe MaxHeight) deriving (Show)
-data IntrinsicSize = IntrinsicSize (Maybe Width) (Maybe Height) deriving (Show)
-data DesiredSize = DesiredSize (Maybe Width) (Maybe Height) deriving (Show)
-newtype Width = Width CGFloat deriving (Show, Eq, Ord)
-newtype Height = Height CGFloat deriving (Show, Eq, Ord)
-newtype MinWidth = MinWidth CGFloat deriving (Show, Eq, Ord)
-newtype MaxWidth = MaxWidth CGFloat deriving (Show, Eq, Ord)
-newtype MinHeight = MinHeight CGFloat deriving (Show, Eq, Ord)
-newtype MaxHeight = MaxHeight CGFloat deriving (Show, Eq, Ord)
+newtype Priority = Priority Double deriving stock (Generic, Show) deriving anyclass (NFData)
+data Padding = Padding (Maybe Left) (Maybe Right) (Maybe Top) (Maybe Bottom) deriving (Generic, NFData, Show)
+data Constraints = Constraints (Maybe MinWidth) (Maybe MaxWidth) (Maybe MinHeight) (Maybe MaxHeight) deriving (Generic, NFData, Show)
+data IntrinsicSize = IntrinsicSize (Maybe Width) (Maybe Height) deriving (Generic, NFData, Show)
+data DesiredSize = DesiredSize (Maybe Width) (Maybe Height) deriving (Generic, NFData, Show)
+newtype Width = Width CGFloat deriving stock (Generic, Show, Eq, Ord) deriving anyclass (NFData)
+newtype Height = Height CGFloat deriving stock (Generic, Show, Eq, Ord) deriving anyclass (NFData)
+newtype MinWidth = MinWidth CGFloat deriving stock (Generic, Show, Eq, Ord) deriving anyclass (NFData)
+newtype MaxWidth = MaxWidth CGFloat deriving stock (Generic, Show, Eq, Ord) deriving anyclass (NFData)
+newtype MinHeight = MinHeight CGFloat deriving stock (Generic, Show, Eq, Ord) deriving anyclass (NFData)
+newtype MaxHeight = MaxHeight CGFloat deriving stock (Generic, Show, Eq, Ord) deriving anyclass (NFData)
 
 instance Semigroup DesiredSize where
  (DesiredSize w1 h1) <> (DesiredSize w2 h2) = DesiredSize (w1 <|> w2) (h1 <|> h2)
@@ -113,7 +134,7 @@ noSize = DesiredSize Nothing Nothing
 idT = Transform3D 1 0 0 0  0 1 0 0  0 0 1 0  0 0 0 1
 
 -- data ViewSpec q = ViewSpec { _impl :: ViewSpecImpl } | Tmp [ViewSpecImpl] deriving (Show)
-data ViewSpec q = Tmp DesiredSize [ViewSpecImpl] deriving (Show)
+data ViewSpec q = Tmp DesiredSize [ViewSpecImpl] deriving (Generic, NFData, Show)
 
 -- data Subviews a = Subviews Insets IsVertical [V a]
 -- data Subviews a = Subviews Direction [V a]
@@ -285,6 +306,60 @@ instance Monad ViewSpec where
 --    [])
 --   Screen
 --   []
+
+--build1 :: ViewSpec q -> IO View
+--build1 spec@(Tmp _ (v:_)) = do
+build1 spec = do
+ -- rawView <- "new" @| "UIView"
+ -- pure $ View v $ Node (UIView rawView) []
+ View v <$> r
+ where
+ r = build1' v
+ Tmp _ (v:_) = spec
+{-
+build1 spec@(Tmp _ (v:_)) = do
+ putStrLn $ "!!build1 spec: " ++ show spec
+ View v <$> build1' v
+-}
+
+--build1' :: ViewSpecImpl -> IO ViewTree
+--build1' (ViewSpecImpl kind color size) = do
+
+build1' spec = build kind
+ where
+ build vv = do
+  v <- "new" @| r
+  pure $ Node (UIView v) []
+
+  where
+  r = case vv of
+   Scroll _ -> "UILabel"
+    
+
+ ViewSpecImpl kind color size = spec
+{-
+ case kind of
+ Label font lineCount breakMode (GetInfo value) -> do
+  v <- "new" @| "UILabel"
+  ("setText:", getNsString =<< value) <@. v
+  ("setNumberOfLines:", fromMaybe 0 $ _rawLineCount <$> lineCount) <./. v
+  pure $ Node (UIView v) []
+ Image aspect (GetInfo img) -> do
+  v <- "new" @| "UIImageView"
+  ("setImage:", _rawUiImage <$> img) <@. v
+  pure $ Node (UIView v) []
+ Container onTap dir vs -> do
+  c <- "new" @| "UIView"
+  ("setBackgroundColor:", uiColor color) <@. c
+  views <- traverse build' vs
+  traverse (\(Node (UIView v) _) -> Superview c `addSubview` Subview v) views
+  pure $ Node (UIView c) views
+ Scroll v -> do
+  c <- "new" @| "UIScrollView"
+  viewInTree@(Node (UIView v) _) <- build' v
+  Superview c `addSubview` Subview v
+  pure $ Node (UIView c) [viewInTree]
+-}
 
 build :: ViewSpec q -> IO View
 build spec@(Tmp _ (v:_)) = do

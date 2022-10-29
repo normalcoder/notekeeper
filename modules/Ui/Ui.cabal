@@ -12,12 +12,14 @@ library
 --   -optl -L/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/lib
   build-depends:
     base,
+    deepseq,
     --containers,
     -- vector,
     -- numeric-limits,
     -- time,
 
     Objc,
+    Gcd,
     UiKit,
     Camera,
     View,

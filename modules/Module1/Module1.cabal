@@ -14,11 +14,18 @@ library
     base,
     --containers,
     random,
+
+    Objc,
     Utils,
     Ui,
+    Gcd,
+    View,
+    UiKit,
     -- vector,
     -- numeric-limits,
     -- time,
+  c-sources:
+    src/module1_state.c
    
 --   aeson
 --   vector-algorithms

@@ -16,6 +16,7 @@ library
   build-depends:
     base,
     numeric-limits,
+    deepseq,
 
     Objc,
     UiKit,
