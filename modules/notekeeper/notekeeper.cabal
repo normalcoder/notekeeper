@@ -28,6 +28,9 @@ library
     Camera,
     View,
     Ui,
+    Utils,
+    Module1,
+    Module2,
    
 --    Utils,
     

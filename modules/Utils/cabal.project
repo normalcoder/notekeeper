@@ -1,2 +1,0 @@
-packages:
-    ./ ./../Ui/*.cabal ./../IOHelpers/*.cabal ./../Gcd/*.cabal ./../Camera/*.cabal ./../View/*.cabal ./../UiKit/*.cabal ./../Objc/*.cabal
