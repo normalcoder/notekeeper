@@ -36,14 +36,14 @@ do
     EXISTING_LIB_PATH="$(find ${LIBS_DIR} | grep "${MODULE}-" | head -n 1)"
 
     if [ ! -f "${EXISTING_LIB_PATH}" ]; then
-        CHANGED_MODULES+=("${MODULE}")
+        CHANGED_MODULES+=(${MODULE})
         continue
     fi
 
 
     for SRC_FILE in $(find "${DIR}/modules/${MODULE}/src" | egrep "\.hs$|\.lhs$|\.c$"); do
         if [ "${SRC_FILE}" -nt "${EXISTING_LIB_PATH}" ]; then
-            CHANGED_MODULES+=("${MODULE}")
+            CHANGED_MODULES+=(${MODULE})
         fi
     done
 done
@@ -63,8 +63,27 @@ for MODULE in ${MODULES}; do
     echo " ./../modules/${MODULE}/*.cabal" >> "${DIR}/root/cabal.project"
 done
 
+
+for MODULE in ${MODULES}; do
+    ROOT_DEPS+=("   ${MODULE},\n")
+done
+
+perl -i -pe "BEGIN{undef $/;} s/(build-depends:\n)(.*)(^(?!    $))/\1 ${ROOT_DEPS}\3/sm" "${DIR}/root/root.cabal"
+
+
 (cd "${DIR}/root" && env -i HOME="$HOME" PATH="$PATH" USER="$USER" cabal build --ghc-options="-threaded -O2 +RTS -A64m -AL128m -qn8 -RTS -optc -Wno-nullability-completeness -optc -Wno-expansion-to-defined -optc -Wno-availability -optc -Wno-int-conversion")
 
+
+# for MODULE in ${CHANGED_MODULES}; do
+#     for f in ${DIR}/root/dist-newstyle/build/*/*/${MODULE}*/build/*.dylib; do
+#         cp "$f" "${DIR}/1/"
+#     done
+#     # cp "${DIR}/root/dist-newstyle/build/*/*/${MODULE}*/build/*.dylib" "${DIR}/"
+#     # cp "${DIR}/root/dist-newstyle/build/*/*" "${DIR}/"
+
+#     # ditto ${MODULE_DIR}/**/
+
+# done
 
 
 # MODULES=$(cd ${MODULE_DIR} && find src | grep .hs$ | sed "s/src\//    /" | sed "s/.hs//" | sed "s/\//./" | sort)
