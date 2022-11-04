@@ -25,11 +25,12 @@ mkdir -p "${LIBS_DIR}"
 # fi
 
 
-CHANGED_MODULES=()
+for MODULE in $(ls -1 "${DIR}/modules"); do
+    MODULES+=(${MODULE})
+done
 
-# MODULES=$(ls -1 "${DIR}/modules")
 
-for MODULE in $(ls -1 "${DIR}/modules")
+for MODULE in ${MODULES}
 do
     # echo "!!!!module: ${DIR}/${MODULE}"
     EXISTING_LIB_PATH="$(find ${LIBS_DIR} | grep "${MODULE}-" | head -n 1)"
@@ -40,8 +41,7 @@ do
     fi
 
 
-    for SRC_FILE in $(find "${DIR}/modules/${MODULE}/src" | egrep "\.hs$|\.lhs$|\.c$")
-    do
+    for SRC_FILE in $(find "${DIR}/modules/${MODULE}/src" | egrep "\.hs$|\.lhs$|\.c$"); do
         if [ "${SRC_FILE}" -nt "${EXISTING_LIB_PATH}" ]; then
             CHANGED_MODULES+=("${MODULE}")
         fi
@@ -50,12 +50,21 @@ done
 echo "CHANGED_MODULES: ${CHANGED_MODULES}"
 
 
-for MODULE in ${CHANGED_MODULES}
-do
+for MODULE in ${CHANGED_MODULES}; do
     MODULE_DIR="${DIR}/modules/${MODULE}"
     HS_SRC_FILES=$(cd ${MODULE_DIR} && find src | grep .hs$ | sed "s/src\//    /" | sed "s/.hs//" | sed "s/\//./" | sort)
     perl -i -pe "BEGIN{undef $/;} s/(exposed-modules:)(.*?)(  [a-z])/\1\n${HS_SRC_FILES}\n\3/sm" "${MODULE_DIR}/${MODULE}.cabal"
 done
+
+
+echo "packages:" > "${DIR}/root/cabal.project"
+echo " ./" >> "${DIR}/root/cabal.project"
+for MODULE in ${MODULES}; do
+    echo " ./../modules/${MODULE}/*.cabal" >> "${DIR}/root/cabal.project"
+done
+
+(cd "${DIR}/root" && env -i HOME="$HOME" PATH="$PATH" USER="$USER" cabal build --ghc-options="-threaded -O2 +RTS -A64m -AL128m -qn8 -RTS -optc -Wno-nullability-completeness -optc -Wno-expansion-to-defined -optc -Wno-availability -optc -Wno-int-conversion")
+
 
 
 # MODULES=$(cd ${MODULE_DIR} && find src | grep .hs$ | sed "s/src\//    /" | sed "s/.hs//" | sed "s/\//./" | sort)

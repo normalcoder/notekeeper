@@ -1,2 +1,13 @@
 packages:
-    ./ ./../modules/Module1/*.cabal ./../modules/Module2/*.cabal ./../modules/Utils/*.cabal ./../modules/Ui/*.cabal ./../modules/View/*.cabal ./../modules/Camera/*.cabal ./../modules/Gcd/*.cabal ./../modules/IOHelpers/*.cabal ./../modules/UiKit/*.cabal ./../modules/Objc/*.cabal
+ ./
+ ./../modules/Camera/*.cabal
+ ./../modules/Gcd/*.cabal
+ ./../modules/IOHelpers/*.cabal
+ ./../modules/Module1/*.cabal
+ ./../modules/Module2/*.cabal
+ ./../modules/Objc/*.cabal
+ ./../modules/Ui/*.cabal
+ ./../modules/UiKit/*.cabal
+ ./../modules/Utils/*.cabal
+ ./../modules/View/*.cabal
+ ./../modules/notekeeper/*.cabal
