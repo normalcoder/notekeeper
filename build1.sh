@@ -20,23 +20,23 @@ LIBS_DIR="${DIR}/${RELATIVE_LIBS_DIR}"
 mkdir -p "${LIBS_DIR}"
 
 markLibsForIos() {
-    perl -pi -e 's/\x32\0\0\0(\x20|\x28)\0\0\0\x01\0\0\0\0(\0|\x01|\x02|\x03|\x04)(\x0b|\x0c)\0\0(\0|\x01|\x02|\x03|\x04)(\x0b|\x0c)\0/\x32\0\0\0\1\0\0\0\x02\0\0\0\0\2\3\0\0\4\5\0/g' ${1}
+    perl -pi -e 's/\x32\0\0\0(\x20|\x28)\0\0\0\x01\0\0\0\0(\0|\x01|\x02|\x03|\x04)(\x0b|\x0c)\0\0(\0|\x01|\x02|\x03|\x04)(\x0b|\x0c)\0/\x32\0\0\0\1\0\0\0\x02\0\0\0\0\2\3\0\0\4\5\0/g' $@
 }
 
 markLibsForSimulator() {
-    perl -pi -e 's/\x32\0\0\0(\x20|\x28)\0\0\0\x01\0\0\0\0(\0|\x01|\x02|\x03|\x04)(\x0b|\x0c)\0\0(\0|\x01|\x02|\x03|\x04)(\x0b|\x0c)\0/\x32\0\0\0\1\0\0\0\x07\0\0\0\0\2\3\0\0\4\5\0/g' ${1}
+    perl -pi -e 's/\x32\0\0\0(\x20|\x28)\0\0\0\x01\0\0\0\0(\0|\x01|\x02|\x03|\x04)(\x0b|\x0c)\0\0(\0|\x01|\x02|\x03|\x04)(\x0b|\x0c)\0/\x32\0\0\0\1\0\0\0\x07\0\0\0\0\2\3\0\0\4\5\0/g' $@
 }
 
 markLibs() {
     if [ ${PLATFORM_NAME} = ${IPHONESIMULATOR_PLATFORM} ]; then
-        markLibsForSimulator "${1}"
+        markLibsForSimulator $@
     else
-        markLibsForIos "${1}"
+        markLibsForIos $@
     fi
 }
 
 signLibs() {
-    codesign -f -s 949CA008AA70C44D456B5C63DFF47B488897AF14 "${1}"
+    codesign -f -s D7F51AF2AD47BCB242BEC840F995F49AA74D4A1A $@
 }
 
 
@@ -211,16 +211,51 @@ for key val in "${(@kv)immediateToLink}"; do
     echo "${key} -> ${val}"
 done
 
+echo "!!1"
+
 if [ -n "${UPDATED_LIBS}" ]; then
-    echo "!!!LIBS_DIR: ${LIBS_DIR}"
-    echo "!!!UPDATED_LIBS: ${UPDATED_LIBS}"
-    # (cd ${LIBS_DIR} && markLibs ${UPDATED_LIBS} && signLibs ${UPDATED_LIBS})
-    (cd ${LIBS_DIR} && for i in ${UPDATED_LIBS}; do markLibs $i; done && signLibs ${UPDATED_LIBS})
+    (cd ${LIBS_DIR} && markLibs ${UPDATED_LIBS} && signLibs ${UPDATED_LIBS})
+    # (cd ${LIBS_DIR} && for i in ${UPDATED_LIBS}; do markLibs $i; done && signLibs ${UPDATED_LIBS})
+
+    # (cd ${LIBS_DIR} && for i in ${UPDATED_LIBS}; do markLibs $i; done && signLibs ${UPDATED_LIBS})
+    # (cd ${LIBS_DIR} && signLibs ${LIBS_DIR}/*)
+    # signLibs ${LIBS_DIR}/*
 fi
+echo "!!2"
+
+RESULT_LIBS_DIR="${DIR}/Frameworks"
+
+mkdir -p ${RESULT_LIBS_DIR}
+
+rsync -a ${LIBS_DIR}/* ${RESULT_LIBS_DIR}/
+
+# cp -R ${RESULT_LIBS_DIR}
+
+# LIBS_LINK="${DIR}/dylibs"
+
+# if [ -L ${LIBS_LINK} ]; then
+#     if [ -e ${LIBS_LINK} ]; then
+#         LINKED_TO_DIR=$(readlink -f "${LIBS_LINK}")
+
+#         if [ "${LINKED_TO_DIR}" != "${LIBS_DIR}" ]; then
+#             echo "Switch to ${LIBS_DIR}"
+#             rm "${LIBS_LINK}"
+#             ln -s "${LIBS_DIR}" "${LIBS_LINK}"
+#         fi
+#     else
+#         rm ${LIBS_LINK}
+#         ln -s "${LIBS_DIR}" "${LIBS_LINK}"
+#     fi
+# elif [ -e ${LIBS_LINK} ]; then
+#     echo "Wrong file or dir on $LIBS_LINK"
+#     exit 1
+# else
+#     ln -s "${LIBS_DIR}" "${LIBS_LINK}"
+# fi
 
 echo -n "" > "${DIR}/.filesToLink"
 for FILE_NAME val in "${(@kv)immediateToLink}"; do
-    echo "${RELATIVE_LIBS_DIR}/${FILE_NAME}" >> "${DIR}/.filesToLink"
+    echo "Frameworks/${FILE_NAME}" >> "${DIR}/.filesToLink"
 done
 
 
@@ -229,13 +264,6 @@ done
 # markLibsForIos ${LIBS_DIR}/*
 # codesign -f -s 949CA008AA70C44D456B5C63DFF47B488897AF14 ${LIBS_DIR}/*
 
-# LINKED_TO_DIR=$(readlink -f "${DIR}/dylibs")
-
-# if [ "${LINKED_TO_DIR}" != "${LIBS_DIR}" ]; then
-#     echo "Switch to ${LIBS_DIR}"
-#     rm -f "${DIR}/dylibs"
-#     ln -s "${LIBS_DIR}" "${DIR}/dylibs"
-# fi
 
 # echo "allDeps2: ${allDeps}"
 
