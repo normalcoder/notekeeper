@@ -19,13 +19,12 @@ LIBS_DIR="${DIR}/${RELATIVE_LIBS_DIR}"
 
 mkdir -p "${LIBS_DIR}"
 
-
 markLibsForIos() {
-    perl -pi -e 's/\x32\0\0\0(\x20|\x28)\0\0\0\x01\0\0\0\0\0(\x0b|\x0c)\0\0(\0|\x01|\x02|\x03|\x04)(\x0b|\x0c)\0/\x32\0\0\0\1\0\0\0\x02\0\0\0\0\0\2\0\0\3\4\0/g' ${1}
+    perl -pi -e 's/\x32\0\0\0(\x20|\x28)\0\0\0\x01\0\0\0\0(\0|\x01|\x02|\x03|\x04)(\x0b|\x0c)\0\0(\0|\x01|\x02|\x03|\x04)(\x0b|\x0c)\0/\x32\0\0\0\1\0\0\0\x02\0\0\0\0\2\3\0\0\4\5\0/g' ${1}
 }
 
 markLibsForSimulator() {
-    perl -pi -e 's/\x32\0\0\0(\x20|\x28)\0\0\0\x01\0\0\0\0\0(\x0b|\x0c)\0\0(\0|\x01|\x02|\x03|\x04)(\x0b|\x0c)\0/\x32\0\0\0\1\0\0\0\x07\0\0\0\0\0\2\0\0\3\4\0/g' ${1}
+    perl -pi -e 's/\x32\0\0\0(\x20|\x28)\0\0\0\x01\0\0\0\0(\0|\x01|\x02|\x03|\x04)(\x0b|\x0c)\0\0(\0|\x01|\x02|\x03|\x04)(\x0b|\x0c)\0/\x32\0\0\0\1\0\0\0\x07\0\0\0\0\2\3\0\0\4\5\0/g' ${1}
 }
 
 markLibs() {
@@ -203,6 +202,7 @@ collectImmediateToLink() {
 MAIN_LIB_PATH=$(find ${LIBS_DIR} | grep "libHS${MAIN_MODULE_NAME}-" | head -n 1)
 
 collectImmediateToLink $(basename ${MAIN_LIB_PATH}) ${MAIN_LIB_PATH}
+immediateToLink[${RTS_LIB_FILE_NAME}]=${RTS_LIB_FILE}
 
 
 for key val in "${(@kv)immediateToLink}"; do
@@ -210,7 +210,10 @@ for key val in "${(@kv)immediateToLink}"; do
 done
 
 if [ -n "${UPDATED_LIBS}" ]; then
-    (cd ${LIBS_DIR} && markLibsForIos ${UPDATED_LIBS} && codesign -f -s 949CA008AA70C44D456B5C63DFF47B488897AF14 ${UPDATED_LIBS})
+    echo "!!!LIBS_DIR: ${LIBS_DIR}"
+    echo "!!!UPDATED_LIBS: ${UPDATED_LIBS}"
+    # (cd ${LIBS_DIR} && markLibs ${UPDATED_LIBS} && signLibs ${UPDATED_LIBS})
+    (cd ${LIBS_DIR} && for i in ${UPDATED_LIBS}; do markLibs $i; done && signLibs ${UPDATED_LIBS})
 fi
 
 echo -n "" > "${DIR}/.filesToLink"
