@@ -202,7 +202,9 @@ collectImmediateToLink() {
 MAIN_LIB_PATH=$(find ${LIBS_DIR} | grep "libHS${MAIN_MODULE_NAME}-" | head -n 1)
 
 collectImmediateToLink $(basename ${MAIN_LIB_PATH}) ${MAIN_LIB_PATH}
-immediateToLink[${RTS_LIB_FILE_NAME}]=${RTS_LIB_FILE}
+
+RTS_LIB_PATH=$(find ${LIBS_DIR} | grep "libHSrts" | head -n 1)
+immediateToLink[$(basename ${RTS_LIB_PATH})]=${RTS_LIB_PATH}
 
 
 for key val in "${(@kv)immediateToLink}"; do
