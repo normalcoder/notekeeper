@@ -207,9 +207,9 @@ RTS_LIB_PATH=$(find ${LIBS_DIR} | grep "libHSrts" | head -n 1)
 immediateToLink[$(basename ${RTS_LIB_PATH})]=${RTS_LIB_PATH}
 
 
-for key val in "${(@kv)immediateToLink}"; do
-    echo "${key} -> ${val}"
-done
+# for key val in "${(@kv)immediateToLink}"; do
+#     echo "${key} -> ${val}"
+# done
 
 if [ -n "${UPDATED_LIBS}" ]; then
     (cd ${LIBS_DIR} && markLibs ${UPDATED_LIBS} && signLibs ${UPDATED_LIBS})
