@@ -14,29 +14,30 @@ IPHONESIMULATOR_PLATFORM="iphonesimulator"
 
 PLATFORM_NAME=${PLATFORM_NAME:-$IPHONEOS_PLATFORM}
 
-LIBS_DIR="${DIR}/.build/dylibs/${PLATFORM_NAME}"
+RELATIVE_LIBS_DIR=".build/dylibs/${PLATFORM_NAME}"
+LIBS_DIR="${DIR}/${RELATIVE_LIBS_DIR}"
 
 mkdir -p "${LIBS_DIR}"
 
 
-markLibForIos() {
+markLibsForIos() {
     perl -pi -e 's/\x32\0\0\0(\x20|\x28)\0\0\0\x01\0\0\0\0\0(\x0b|\x0c)\0\0(\0|\x01|\x02|\x03|\x04)(\x0b|\x0c)\0/\x32\0\0\0\1\0\0\0\x02\0\0\0\0\0\2\0\0\3\4\0/g' ${1}
 }
 
-markLibForSimulator() {
+markLibsForSimulator() {
     perl -pi -e 's/\x32\0\0\0(\x20|\x28)\0\0\0\x01\0\0\0\0\0(\x0b|\x0c)\0\0(\0|\x01|\x02|\x03|\x04)(\x0b|\x0c)\0/\x32\0\0\0\1\0\0\0\x07\0\0\0\0\0\2\0\0\3\4\0/g' ${1}
 }
 
-markLib() {
+markLibs() {
     if [ ${PLATFORM_NAME} = ${IPHONESIMULATOR_PLATFORM} ]; then
-        # markLibForSimulator "${1}"
+        markLibsForSimulator "${1}"
     else
-        # markLibForIos "${1}"
+        markLibsForIos "${1}"
     fi
 }
 
-signLib() {
-    # codesign -f -s 949CA008AA70C44D456B5C63DFF47B488897AF14 "${1}"
+signLibs() {
+    codesign -f -s 949CA008AA70C44D456B5C63DFF47B488897AF14 "${1}"
 }
 
 
@@ -85,16 +86,15 @@ perl -i -pe "BEGIN{undef $/;} s/(build-depends:\n)(.*)(^(?!    $))/\1 ${ROOT_DEP
 
 (cd "${DIR}/root" && env -i HOME="$HOME" PATH="$PATH" USER="$USER" cabal build --ghc-options="-threaded -O2 +RTS -A64m -AL128m -qn8 -RTS -optc -Wno-nullability-completeness -optc -Wno-expansion-to-defined -optc -Wno-availability -optc -Wno-int-conversion")
 
-
 for MODULE in ${CHANGED_MODULES}; do
     for LIB in ${DIR}/root/dist-newstyle/build/*/*/${MODULE}*/build/*.dylib; do
         LIB_NAME=$(basename ${LIB})
         UPDATED_LIB="${LIBS_DIR}/${LIB_NAME}"
         cp "${LIB}" "${UPDATED_LIB}"
-        (markLib "${UPDATED_LIB}" && signLib "${UPDATED_LIB}") || rm "${UPDATED_LIB}"
+        # (markLib "${UPDATED_LIB}" && signLib "${UPDATED_LIB}") || rm "${UPDATED_LIB}"
+        UPDATED_LIBS+=(${LIB_NAME})
     done
 done
-
 
 declare -A existingLibs
 
@@ -156,9 +156,9 @@ for MODULE in ${CHANGED_MODULES}; do
 done
 
 
-for key val in "${(@kv)allDeps}"; do
-    echo "allDeps: ${key} -> ${val}"
-done
+# for key val in "${(@kv)allDeps}"; do
+#     echo "allDeps: ${key} -> ${val}"
+# done
 
 # for key val in "${(@kv)immediateToLink}"; do
 #     echo "immediateToLink: ${key} -> ${val}"
@@ -168,7 +168,8 @@ for LIB_FILE_NAME LIB_FILE_PATH in "${(@kv)allDeps}"; do
     if [ -z "${existingLibs[$LIB_FILE_NAME]}" ]; then
         UPDATED_LIB="${LIBS_DIR}/${LIB_FILE_NAME}"
         cp "${LIB_FILE_PATH}" "${UPDATED_LIB}"
-        (markLib "${UPDATED_LIB}" && signLib "${UPDATED_LIB}") || rm "${UPDATED_LIB}"
+        # (markLib "${UPDATED_LIB}" && signLib "${UPDATED_LIB}") || rm "${UPDATED_LIB}"
+        UPDATED_LIBS+=(${LIB_FILE_NAME})
     fi
 done
 
@@ -208,6 +209,19 @@ for key val in "${(@kv)immediateToLink}"; do
     echo "${key} -> ${val}"
 done
 
+if [ -n "${UPDATED_LIBS}" ]; then
+    (cd ${LIBS_DIR} && markLibForIos ${UPDATED_LIBS} && codesign -f -s 949CA008AA70C44D456B5C63DFF47B488897AF14 ${UPDATED_LIBS})
+fi
+
+echo -n "" > "${DIR}/.filesToLink"
+for FILE_NAME val in "${(@kv)immediateToLink}"; do
+    echo "${RELATIVE_LIBS_DIR}/${FILE_NAME}" >> "${DIR}/.filesToLink"
+done
+
+
+# (cd ${LIBS_DIR} && markLibForIos ${UPDATED_LIBS} && codesign -f -s 949CA008AA70C44D456B5C63DFF47B488897AF14 ${UPDATED_LIBS})
+
+# markLibForIos ${LIBS_DIR}/*
 # codesign -f -s 949CA008AA70C44D456B5C63DFF47B488897AF14 ${LIBS_DIR}/*
 
 # LINKED_TO_DIR=$(readlink -f "${DIR}/dylibs")
