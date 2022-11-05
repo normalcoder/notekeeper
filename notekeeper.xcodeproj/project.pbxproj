@@ -12,7 +12,7 @@
 		E68F4AFA21EB4F8900ECEABD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E68F4AF921EB4F8900ECEABD /* Assets.xcassets */; };
 		E68F4AFD21EB4F8900ECEABD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E68F4AFB21EB4F8900ECEABD /* LaunchScreen.storyboard */; };
 		E68F4B0021EB4F8900ECEABD /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E68F4AFF21EB4F8900ECEABD /* main.m */; };
-		FAD0A373291723E600EB78E8 /* Frameworks in Resources */ = {isa = PBXBuildFile; fileRef = FAD0A372291723E600EB78E8 /* Frameworks */; };
+		FAD0A37529172D1D00EB78E8 /* dylibs in Resources */ = {isa = PBXBuildFile; fileRef = FAD0A37429172D1D00EB78E8 /* dylibs */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,7 +26,7 @@
 		E68F4AFC21EB4F8900ECEABD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E68F4AFE21EB4F8900ECEABD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E68F4AFF21EB4F8900ECEABD /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		FAD0A372291723E600EB78E8 /* Frameworks */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Frameworks; sourceTree = "<group>"; };
+		FAD0A37429172D1D00EB78E8 /* dylibs */ = {isa = PBXFileReference; lastKnownFileType = folder; path = dylibs; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,7 +58,7 @@
 				E68F4AFB21EB4F8900ECEABD /* LaunchScreen.storyboard */,
 				E68F4AFE21EB4F8900ECEABD /* Info.plist */,
 				E68F4AFF21EB4F8900ECEABD /* main.m */,
-				FAD0A372291723E600EB78E8 /* Frameworks */,
+				FAD0A37429172D1D00EB78E8 /* dylibs */,
 				E6524035277D383000ADA2A7 /* NativeFrameworks */,
 				E68F4AEE21EB4F8900ECEABD /* Products */,
 				E60862162468933100486ECB /* build.sh */,
@@ -133,8 +133,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FAD0A373291723E600EB78E8 /* Frameworks in Resources */,
 				E68F4AFD21EB4F8900ECEABD /* LaunchScreen.storyboard in Resources */,
+				FAD0A37529172D1D00EB78E8 /* dylibs in Resources */,
 				E68F4AFA21EB4F8900ECEABD /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -311,7 +311,7 @@
 				INFOPLIST_FILE = Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
-					"@executable_path/Frameworks",
+					"@executable_path/dylibs",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -336,7 +336,7 @@
 				INFOPLIST_FILE = Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
-					"@executable_path/Frameworks",
+					"@executable_path/dylibs",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",

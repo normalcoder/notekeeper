@@ -4,6 +4,9 @@ dist-newstyle
 *.a
 *.dylib
 .filesToLink
+.build
+build
+dylibs
 
 cabal.project.local
 *.xcconfig

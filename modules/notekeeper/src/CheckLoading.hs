@@ -48,7 +48,7 @@ moduleName3 = "Module3"
 libName moduleName = "libHS" ++ moduleName ++ "-0.1.0.0-inplace-ghc9.5.20221014"
 
 loadLib moduleName = do
- libFileName <- getNsString $ "Frameworks/" ++ (libName moduleName) ++ ".dylib"
+ libFileName <- getNsString $ "dylibs/" ++ (libName moduleName) ++ ".dylib"
  libPath <- "UTF8String" @< ("pathForResource:ofType:", [libFileName, nullPtr]) <.@@ "mainBundle" @| "NSBundle"
  libHandle <- c_dlopen libPath c_RTLD_LAZY
  print $ "!!!libHandle, " ++ moduleName ++ ": " ++ show libHandle
