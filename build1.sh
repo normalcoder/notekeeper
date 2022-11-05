@@ -210,7 +210,7 @@ for key val in "${(@kv)immediateToLink}"; do
 done
 
 if [ -n "${UPDATED_LIBS}" ]; then
-    (cd ${LIBS_DIR} && markLibForIos ${UPDATED_LIBS} && codesign -f -s 949CA008AA70C44D456B5C63DFF47B488897AF14 ${UPDATED_LIBS})
+    (cd ${LIBS_DIR} && markLibsForIos ${UPDATED_LIBS} && codesign -f -s 949CA008AA70C44D456B5C63DFF47B488897AF14 ${UPDATED_LIBS})
 fi
 
 echo -n "" > "${DIR}/.filesToLink"
@@ -219,9 +219,9 @@ for FILE_NAME val in "${(@kv)immediateToLink}"; do
 done
 
 
-# (cd ${LIBS_DIR} && markLibForIos ${UPDATED_LIBS} && codesign -f -s 949CA008AA70C44D456B5C63DFF47B488897AF14 ${UPDATED_LIBS})
+# (cd ${LIBS_DIR} && markLibsForIos ${UPDATED_LIBS} && codesign -f -s 949CA008AA70C44D456B5C63DFF47B488897AF14 ${UPDATED_LIBS})
 
-# markLibForIos ${LIBS_DIR}/*
+# markLibsForIos ${LIBS_DIR}/*
 # codesign -f -s 949CA008AA70C44D456B5C63DFF47B488897AF14 ${LIBS_DIR}/*
 
 # LINKED_TO_DIR=$(readlink -f "${DIR}/dylibs")
