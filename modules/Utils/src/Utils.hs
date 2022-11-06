@@ -1,4 +1,6 @@
 module Utils (
+  saveView,
+  loadView,
   saveThreadId,
   loadThreadId,
   saveUiHandle,
@@ -13,6 +15,7 @@ import Control.Concurrent.MVar
 import GHC.IO
 import System.Random
 
+import Objc
 import Ui
 
 import Gcd
@@ -24,6 +27,15 @@ onMainThreadWrap2 = do
  forkIO $ do
   onMainThread $ print "action in main"
  pure ()
+
+
+saveView view = do
+ putMVar viewVar view
+
+loadView = do
+ view <- takeMVar viewVar
+ pure view
+
 
 saveUiHandle uiHandle = do
  print $ "!!saving uiHandle" ++ show uiHandle
@@ -90,3 +102,7 @@ uiHandleVar = unsafePerformIO $ newIORef Nothing
 {-# NOINLINE threadIdVar #-}
 threadIdVar :: IORef (Maybe ThreadId)
 threadIdVar = unsafePerformIO $ newIORef Nothing
+
+{-# NOINLINE viewVar #-}
+viewVar :: MVar Id
+viewVar = unsafePerformIO $ newEmptyMVar

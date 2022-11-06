@@ -39,23 +39,30 @@ addNewUi ui = do
 loadModule1 = do
  print "real_loadModule1"
 
- f <- onMainThread2 $ do
+ onMainThread3 $ do
   v <- addNewUi ui
-  poke c_module1_rootView v
+  -- poke c_module1_rootView v
+  saveView v
   print $ "!!!added ptr: " ++ show v
 
- threadDelay $ 10^5
- freeHaskellFunPtr f
+ -- threadDelay $ 10^5
+ -- freeHaskellFunPtr f
  print $ "!!!freeHaskellFunPtr 1 called"
 
 unloadModule1 = do
  print $ "real_unloadModule1"
- v <- peek c_module1_rootView
+ -- v <- peek c_module1_rootView
+ v <- loadView
  print $ "!!!ptr to remove: " ++ show v
- f <- onMainThread2 $ do
+
+ finishedVar <- newEmptyMVar
+ onMainThread3 $ do
   removeFromSuperview v
- threadDelay $ 10^5
- freeHaskellFunPtr f
+  putMVar finishedVar True
+ -- threadDelay $ 10^5
+ -- freeHaskellFunPtr f
+
+ _ <- takeMVar finishedVar
  print $ "!!!freeHaskellFunPtr 2 called"
 
 ui1 i = stackH $ do
