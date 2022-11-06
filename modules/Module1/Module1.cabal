@@ -24,8 +24,6 @@ library
     -- vector,
     -- numeric-limits,
     -- time,
-  c-sources:
-    src/module1_state.c
    
 --   aeson
 --   vector-algorithms
