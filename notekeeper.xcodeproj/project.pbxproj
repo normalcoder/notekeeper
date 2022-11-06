@@ -23,6 +23,7 @@
 		E68F4AFC21EB4F8900ECEABD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E68F4AFE21EB4F8900ECEABD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E68F4AFF21EB4F8900ECEABD /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		FA6A12522918304E00F9E730 /* src */ = {isa = PBXFileReference; lastKnownFileType = folder; path = src; sourceTree = "<group>"; };
 		FAD0A37429172D1D00EB78E8 /* dylibs */ = {isa = PBXFileReference; lastKnownFileType = folder; path = dylibs; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -55,6 +56,7 @@
 				E68F4AFB21EB4F8900ECEABD /* LaunchScreen.storyboard */,
 				E68F4AFE21EB4F8900ECEABD /* Info.plist */,
 				E68F4AFF21EB4F8900ECEABD /* main.m */,
+				FA6A12522918304E00F9E730 /* src */,
 				FAD0A37429172D1D00EB78E8 /* dylibs */,
 				E6524035277D383000ADA2A7 /* NativeFrameworks */,
 				E68F4AEE21EB4F8900ECEABD /* Products */,

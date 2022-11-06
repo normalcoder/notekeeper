@@ -14,7 +14,7 @@ module Objc
 import ObjcClassManipulations
 import ObjcFunPtr
 import ObjcHelpers
-import ObjcMixStorage (CommonCallFunc(..))
+import ObjcMixStorage (CommonCallFunc(..), MixTag(..), WhichRemove(..))
 import ObjcGlobalMixStorage
 import ObjcMsg
 import ObjcMsgHelpers

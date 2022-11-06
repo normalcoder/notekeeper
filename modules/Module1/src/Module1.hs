@@ -52,7 +52,7 @@ unloadModule1 = do
  print $ "!!!ptr to remove: " ++ show v
 
  onMainThreadSync $ do
-  unpin rootView
+  Superview rootView `unpin` Subview v
   removeFromSuperview v
   
  print $ "!!!Module1 unloaded"

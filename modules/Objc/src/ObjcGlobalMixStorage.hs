@@ -16,10 +16,10 @@ globalMixStorage :: Mix.MixStorage
 {-# NOINLINE globalMixStorage #-}
 globalMixStorage = unsafePerformIO Mix.create
 
-mix needReplaceResult mixOrder = Mix.mix needReplaceResult mixOrder globalMixStorage
-mixBefore = Mix.mixBefore globalMixStorage
-mixAfter = Mix.mixAfter globalMixStorage
-mixReplace = Mix.mixReplace globalMixStorage
+mix needReplaceResult tag mixOrder = Mix.mix needReplaceResult mixOrder tag globalMixStorage
+mixBefore tag = Mix.mixBefore tag globalMixStorage
+mixAfter tag = Mix.mixAfter tag globalMixStorage
+mixReplace tag = Mix.mixReplace tag globalMixStorage
 unmix toRemove = Mix.unmix toRemove globalMixStorage
 unmixFirst = Mix.unmixFirst globalMixStorage
 unmixLast = Mix.unmixLast globalMixStorage

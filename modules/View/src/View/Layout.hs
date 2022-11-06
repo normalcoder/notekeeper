@@ -20,11 +20,12 @@ import Tree
 
 import Data.IORef
 
+toTag = MixTag
 
 addSubviewAndPin v@(Superview superview) subviewDef@(View spec (Node subview@(UIView rawSubview) _)) = do
  addSubview v (Subview rawSubview)
  setFrameToBounds
- mixAfter superview "layoutSubviews" $ NoRet $ \_ _ _ -> setFrameToBounds
+ mixAfter (toTag rawSubview) superview "layoutSubviews" $ NoRet $ \_ _ _ -> setFrameToBounds
  where
   setFrameToBounds = do
    f@(x,y,w,h) <- "bounds" #<. superview
@@ -34,7 +35,7 @@ addSubviewAndPin v@(Superview superview) subviewDef@(View spec (Node subview@(UI
    -- widthRest <- newIORef
    layoutSubviews ((w,h), subviewDef)
 
-unpin superview = unmixLast superview "layoutSubviews"
+unpin (Superview superview) (Subview view) = unmix (RemoveByTag $ toTag view) superview "layoutSubviews"
 
 {-
 | text1 |       |

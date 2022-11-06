@@ -26,9 +26,9 @@ getRandomAlphanumericString n = do
  nums <- sequence $ take n $ cycle [randomIO]
  return $ map ((chars !!) . (`mod` length chars)) nums
 
-onEvent mixStorage control controlEvent action = do
+onEvent tag mixStorage control controlEvent action = do
  methodName <- getRandomAlphanumericString 10
- mix ReplaceResult Replace mixStorage control methodName (NoRet $ \_ _ _ -> action)
+ mix ReplaceResult Replace tag mixStorage control methodName (NoRet $ \_ _ _ -> action)
  getSelByName methodName >>= \actSel -> ("addTarget:action:forControlEvents:", [control, actSel, touchUpInside]) <.@@. control
 
 setTitle control state t = getNsString t >>= \t -> ("setTitle:forState:", [t, state]) <.@@. control
