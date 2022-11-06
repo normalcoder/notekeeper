@@ -16,9 +16,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		3F81968A252A6B3000758A04 /* notekeeper.cabal */ = {isa = PBXFileReference; lastKnownFileType = text; path = notekeeper.cabal; sourceTree = "<group>"; };
-		E60862152468924000486ECB /* src */ = {isa = PBXFileReference; lastKnownFileType = folder; path = src; sourceTree = "<group>"; };
-		E60862162468933100486ECB /* build.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = build.sh; sourceTree = "<group>"; };
 		E6524036277D384900ADA2A7 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		E6524037277D384900ADA2A7 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		E68F4AED21EB4F8900ECEABD /* notekeeper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = notekeeper.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -61,9 +58,6 @@
 				FAD0A37429172D1D00EB78E8 /* dylibs */,
 				E6524035277D383000ADA2A7 /* NativeFrameworks */,
 				E68F4AEE21EB4F8900ECEABD /* Products */,
-				E60862162468933100486ECB /* build.sh */,
-				3F81968A252A6B3000758A04 /* notekeeper.cabal */,
-				E60862152468924000486ECB /* src */,
 			);
 			sourceTree = "<group>";
 		};
@@ -159,7 +153,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "zsh build1.sh\n";
+			shellScript = "zsh build.sh\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
