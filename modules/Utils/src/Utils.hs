@@ -1,6 +1,8 @@
 module Utils (
   saveView,
   loadView,
+  saveRootView,
+  loadRootView,
   saveThreadId,
   loadThreadId,
   saveUiHandle,
@@ -34,6 +36,13 @@ saveView view = do
 
 loadView = do
  view <- takeMVar viewVar
+ pure view
+
+saveRootView view = do
+ putMVar rootViewVar view
+
+loadRootView = do
+ view <- takeMVar rootViewVar
  pure view
 
 
@@ -106,3 +115,7 @@ threadIdVar = unsafePerformIO $ newIORef Nothing
 {-# NOINLINE viewVar #-}
 viewVar :: MVar Id
 viewVar = unsafePerformIO $ newEmptyMVar
+
+{-# NOINLINE rootViewVar #-}
+rootViewVar :: MVar Id
+rootViewVar = unsafePerformIO $ newEmptyMVar

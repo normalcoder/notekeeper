@@ -1,8 +1,6 @@
 module Gcd
 ( onMainThread
-, onMainThread1
-, onMainThread2
-, onMainThread3
+, onMainThreadSync
 , getBackgroundQueue
 ) where
 
@@ -14,31 +12,22 @@ import Control.Concurrent.MVar
 type GcdQueue = Ptr ()
 type GcdDispatchFunction = FunPtr (IO ())
 
-onMainThread1 :: IO () -> IO ()
-onMainThread1 a = do
- pure ()
+onMainThreadSync action = do
+ finishedVar <- newEmptyMVar
+ onMainThread $ do
+  action
+  putMVar finishedVar ()
+ takeMVar finishedVar
 
-onMainThread3 action = do
- sharedVar <- newEmptyMVar
+onMainThread action = do
+ funcPtrVar <- newEmptyMVar
  let
   action' = do
    action
-   f <- takeMVar sharedVar
+   f <- takeMVar funcPtrVar
    freeHaskellFunPtr f
  f <- toFunPtr1 action'
- putMVar sharedVar f
- let mainQueue = c__dispatch_main_q
- c_dispatch_async_f mainQueue nullPtr f
- pure ()
-
-onMainThread2 a = do
- f <- toFunPtr1 a
- let mainQueue = c__dispatch_main_q
- c_dispatch_async_f mainQueue nullPtr f
- pure f
-
-onMainThread a = do
- f <- toFunPtr1 a
+ putMVar funcPtrVar f
  let mainQueue = c__dispatch_main_q
  c_dispatch_async_f mainQueue nullPtr f
  pure ()

@@ -25,45 +25,37 @@ foreign export ccall unloadModule1 :: IO ()
 
 moduleName = "Module1"
 
-foreign import ccall "&module1_rootView" c_module1_rootView :: Ptr Id
-
 addNewUi ui = do
  w <- "keyWindow" @< "sharedApplication" @| "UIApplication"
  vc <- "rootViewController" @<. w
  rootView <- "view" @<. vc
+ saveRootView rootView
  view@(View spec (Node subview@(UIView rawSubview) _)) <- build ui
  Superview rootView `addSubviewAndPin` view
- unpin rootView
  pure rawSubview
 
 loadModule1 = do
  print "real_loadModule1"
 
- onMainThread3 $ do
+ onMainThread $ do
   v <- addNewUi ui
-  -- poke c_module1_rootView v
   saveView v
   print $ "!!!added ptr: " ++ show v
 
- -- threadDelay $ 10^5
- -- freeHaskellFunPtr f
- print $ "!!!freeHaskellFunPtr 1 called"
+ threadDelay $ 10*10^6
+ print $ "!!!Module1 loaded"
 
 unloadModule1 = do
  print $ "real_unloadModule1"
- -- v <- peek c_module1_rootView
  v <- loadView
+ rootView <- loadRootView
  print $ "!!!ptr to remove: " ++ show v
 
- finishedVar <- newEmptyMVar
- onMainThread3 $ do
+ onMainThreadSync $ do
+  unpin rootView
   removeFromSuperview v
-  putMVar finishedVar True
- -- threadDelay $ 10^5
- -- freeHaskellFunPtr f
-
- _ <- takeMVar finishedVar
- print $ "!!!freeHaskellFunPtr 2 called"
+  
+ print $ "!!!Module1 unloaded"
 
 ui1 i = stackH $ do
  stack $ do
