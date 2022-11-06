@@ -193,28 +193,9 @@ fi
 
 RESULT_LIBS_DIR="${DIR}/dylibs"
 
+mkdir -p ${RESULT_LIBS_DIR}
 
-LIBS_LINK="${RESULT_LIBS_DIR}"
-
-if [ -L ${LIBS_LINK} ]; then
-    if [ -e ${LIBS_LINK} ]; then
-        LINKED_TO_DIR=$(readlink -f "${LIBS_LINK}")
-
-        if [ "${LINKED_TO_DIR}" != "${LIBS_DIR}" ]; then
-            echo "Switch to ${LIBS_DIR}"
-            rm "${LIBS_LINK}"
-            ln -s "${LIBS_DIR}" "${LIBS_LINK}"
-        fi
-    else
-        rm ${LIBS_LINK}
-        ln -s "${LIBS_DIR}" "${LIBS_LINK}"
-    fi
-elif [ -e ${LIBS_LINK} ]; then
-    echo "Wrong file or dir on ${LIBS_LINK}"
-    exit 1
-else
-    ln -s "${LIBS_DIR}" "${LIBS_LINK}"
-fi
+rsync -a ${LIBS_DIR}/* ${RESULT_LIBS_DIR}/
 
 echo -n "" > "${DIR}/.filesToLink"
 for FILE_NAME val in "${(@kv)immediateToLink}"; do
