@@ -29,32 +29,22 @@ addNewUi ui = do
  w <- "keyWindow" @< "sharedApplication" @| "UIApplication"
  vc <- "rootViewController" @<. w
  rootView <- "view" @<. vc
- saveRootView rootView
  view@(View spec (Node subview@(UIView rawSubview) _)) <- build ui
  Superview rootView `addSubviewAndPin` view
  pure rawSubview
 
-loadModule1 = do
- print "real_loadModule1"
 
+loadModule1 = do
+ print "loadModule1"
  onMainThread $ do
   v <- addNewUi ui
   saveView v
-  print $ "!!!added ptr: " ++ show v
-
- threadDelay $ 2*10^6
- print $ "!!!Module1 loaded"
 
 unloadModule1 = do
- print $ "real_unloadModule1"
+ print $ "unloadModule1"
  v <- loadView
- rootView <- loadRootView
- print $ "!!!ptr to remove: " ++ show v
-
  onMainThreadSync $ do
   unpinAndRemoveFromSuperview v
-  
- print $ "!!!Module1 unloaded"
 
 ui1 i = stackH $ do
  stack $ do
