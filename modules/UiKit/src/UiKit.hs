@@ -5,6 +5,7 @@ module UiKit
 , addSubview
 , addSubview'
 , removeFromSuperview
+, superview
 , safeSetFrame
 , setContentSize
 , Rect
@@ -59,6 +60,9 @@ addSubview (Superview superview) (Subview subview) = do
 removeFromSuperview view = do
  "removeFromSuperview" @<. view
  pure ()
+
+superview view = do
+ "superview" @<. view
 
 setContentSize size (UIScrollView (UIView v)) = do
  ("setContentSize:", size) <.%. v

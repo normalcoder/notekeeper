@@ -42,7 +42,7 @@ loadModule1 = do
   saveView v
   print $ "!!!added ptr: " ++ show v
 
- threadDelay $ 10*10^6
+ threadDelay $ 2*10^6
  print $ "!!!Module1 loaded"
 
 unloadModule1 = do
@@ -52,8 +52,7 @@ unloadModule1 = do
  print $ "!!!ptr to remove: " ++ show v
 
  onMainThreadSync $ do
-  Superview rootView `unpin` Subview v
-  removeFromSuperview v
+  unpinAndRemoveFromSuperview v
   
  print $ "!!!Module1 unloaded"
 

@@ -2,6 +2,7 @@
 
 module View.Layout
 ( addSubviewAndPin
+, unpinAndRemoveFromSuperview
 , unpin
 ) where
 
@@ -36,6 +37,12 @@ addSubviewAndPin v@(Superview superview) subviewDef@(View spec (Node subview@(UI
    layoutSubviews ((w,h), subviewDef)
 
 unpin (Superview superview) (Subview view) = unmix (RemoveByTag $ toTag view) superview "layoutSubviews"
+
+unpinAndRemoveFromSuperview v = do
+ superview <- superview v
+ Superview superview `unpin` Subview v
+ removeFromSuperview v
+
 
 {-
 | text1 |       |
