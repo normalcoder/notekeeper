@@ -23,8 +23,8 @@ import UiKitHelpers
 newtype UIView = UIView { _rawUiView :: Id } deriving (Generic, NFData, Show)
 newtype UIScrollView = UIScrollView UIView deriving (Generic, NFData, Show)
 -- newtype UiView = UiView Id
-newtype Subview = Subview Id deriving (Generic, NFData)
-newtype Superview = Superview Id deriving (Generic, NFData)
+newtype Subview = Subview Id deriving (Show, Generic, NFData)
+newtype Superview = Superview Id deriving (Show, Generic, NFData)
 
 
 type Rect = (CGFloat, CGFloat, CGFloat, CGFloat)

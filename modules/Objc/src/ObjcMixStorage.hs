@@ -178,7 +178,7 @@ deleteImpl (cls, sel, obj) whichRemove (Mixes mixesMap) = (status, Mixes mixesMa
   g (ReplacingCalls replacing) = ReplacingCalls (removeFunc replacing)
 
   removeFunc = case whichRemove of { RemoveFirst -> tail ; RemoveLast -> init ; RemoveByTag tag -> removeByTag tag }
-  removeByTag tag = filter (\call -> _mixTag call == tag)
+  removeByTag tag = filter (\call -> _mixTag call /= tag)
 
 initial = Mixes M.empty
 
