@@ -1,6 +1,4 @@
-{-# language GHC2021 #-}
-
-module Module1 () where
+module ClothingList () where
 
 import Data.IORef
 import Control.Concurrent
@@ -50,6 +48,7 @@ ui1 i = stackH $ do
  stack $ do
   view yellow
   view green
+  width 50
  when (odd i) $ do
   overlap $ do
    view darkGray

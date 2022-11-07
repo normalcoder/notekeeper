@@ -1,12 +1,10 @@
-{-# language GHC2021 #-}
-
-module Module1 () where
+module ClothingView () where
 
 import Data.IORef
 import Control.Concurrent
 import Control.Concurrent.MVar
 import GHC.IO
-import System.Random
+--import System.Random
 
 import Foreign.Ptr
 import Foreign
@@ -20,10 +18,10 @@ import Gcd
 import View.View
 import UiKit
 
-foreign export ccall loadModule1 :: IO ()
-foreign export ccall unloadModule1 :: IO ()
+foreign export ccall loadClothingView :: IO ()
+foreign export ccall unloadClothingView :: IO ()
 
-moduleName = "Module1"
+moduleName = "ClothingView"
 
 addNewUi ui = do
  w <- "keyWindow" @< "sharedApplication" @| "UIApplication"
@@ -34,17 +32,19 @@ addNewUi ui = do
  pure rawSubview
 
 
-loadModule1 = do
- print "loadModule1"
+loadClothingView = do
+ print "loadClothingView"
  onMainThread $ do
   v <- addNewUi ui
   saveView v
 
-unloadModule1 = do
- print $ "unloadModule1"
+unloadClothingView = do
+ print $ "unloadClothingView"
  v <- loadView
  onMainThreadSync $ do
   unpinAndRemoveFromSuperview v
+
+boots = undefined
 
 ui1 i = stackH $ do
  stack $ do
@@ -53,9 +53,10 @@ ui1 i = stackH $ do
  when (odd i) $ do
   overlap $ do
    view darkGray
-   text "module 1"
+   text moduleName
  stack $ do
   view red
+  -- boots
   view cyan
 
 ui = scroll $ stack $ do

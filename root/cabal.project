@@ -1,6 +1,7 @@
 packages:
  ./
  ./../modules/Camera/*.cabal
+ ./../modules/ClothingView/*.cabal
  ./../modules/Gcd/*.cabal
  ./../modules/IOHelpers/*.cabal
  ./../modules/Module1/*.cabal
@@ -10,4 +11,5 @@ packages:
  ./../modules/UiKit/*.cabal
  ./../modules/Utils/*.cabal
  ./../modules/View/*.cabal
+ ./../modules/Wardrobe/*.cabal
  ./../modules/notekeeper/*.cabal

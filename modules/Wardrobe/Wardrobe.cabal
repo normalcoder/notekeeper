@@ -1,0 +1,22 @@
+cabal-version: 3.8
+name: Wardrobe
+version: 0.1.0.0
+author: username
+maintainer: email@example.com
+
+library
+  exposed-modules:
+    Wardrobe
+  ghc-options:
+  build-depends:
+    base,
+
+    Utils,
+    Ui,
+    View,
+    Objc,
+    UiKit,
+    IOHelpers,
+    Gcd,
+  hs-source-dirs: src
+  default-language: GHC2021

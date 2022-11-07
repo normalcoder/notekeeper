@@ -24,9 +24,16 @@ foreign import ccall "dynamic"
   mkFun :: FunPtr (IO ()) -> (IO ())
 
 checkLoading = forkIO $ do
+ unload <- loadLib_fixed "Wardrobe"
+ threadDelay $ 10*10^6
+ unload
+
+
+checkLoading1 = forkIO $ do
  pause
  (unloadLib1, libHandle1) <- loadLib moduleName1
  pause
+ threadDelay $ 10*10^6
  unloadLib1
  pause
  closeLib libHandle1
@@ -41,7 +48,7 @@ checkLoading = forkIO $ do
 
 pause = pure ()
 
--- pause = threadDelay $ 10^4
+-- pause = threadDelay $ 2*10^6
 
 moduleName1 = "Module1"
 moduleName2 = "Module2"
@@ -66,3 +73,20 @@ loadLib moduleName = do
 closeLib libHandle = do
  closeResult <- c_dlclose libHandle
  print $ "!!!closeResult: " ++ show closeResult
+
+
+loadLib_fixed moduleName = do
+ libFileName <- getNsString $ "dylibs/" ++ (libName moduleName) ++ ".dylib"
+ libPath <- "UTF8String" @< ("pathForResource:ofType:", [libFileName, nullPtr]) <.@@ "mainBundle" @| "NSBundle"
+ libHandle <- c_dlopen libPath c_RTLD_LAZY
+ print $ "!!!libHandle, " ++ moduleName ++ ": " ++ show libHandle
+ loadFunName <- "UTF8String" @< getNsString ("load" ++ moduleName)
+ unloadFunName <- "UTF8String" @< getNsString ("unload" ++ moduleName)
+ loadFun <- mkFun <$> c_dlsym libHandle loadFunName
+ unloadFun <- mkFun <$> c_dlsym libHandle unloadFunName
+ 
+ loadFun
+
+ pure $ do
+  unloadFun
+  closeLib libHandle
